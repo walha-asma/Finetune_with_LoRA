@@ -4,15 +4,15 @@ import numpy as np
 from pathlib import Path
 from torchvision import transforms
 from transformers import CLIPProcessor, CLIPModel
+from contextlib import nullcontext
 
 
-def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name):
+def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name, use_autocast=False):
     """
-    Run after training. Generates images from test set prompts and computes:
-    - FID (generated vs real test images)
-    - CLIP score
-    - OCR accuracy
-    - Inference latency
+    Args:
+        use_autocast: True only for QLoRA — fixes the bfloat16/float32 mismatch
+                      in the quantized VAE during pipe() inference.
+                      False for all other models (LoRA variants, full fine-tune).
     """
 
     print("\n" + "="*70)
@@ -22,7 +22,6 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name):
     output_dir = Path("results/generated_images") / experiment_name / "test"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Collect test samples
     all_real_images = []
     all_prompts = []
     all_texts = []
@@ -35,25 +34,31 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name):
             all_real_images.append(pil)
 
     print(f"Test set: {len(all_prompts)} samples")
+    if use_autocast:
+        print("  [INFO] bfloat16 autocast enabled for inference (QLoRA mode)")
 
     # Generate images
     print("\n[1/4] Generating images from test prompts...")
     generated_images = []
     inference_times = []
 
+    # nullcontext = no-op for all non-QLoRA models
+    inference_ctx = torch.autocast("cuda", dtype=torch.bfloat16) if use_autocast else nullcontext()
+
     for i, prompt in enumerate(all_prompts):
         torch.cuda.empty_cache()
         start = time.time()
         with torch.no_grad():
-            image = pipe(
-                prompt=prompt,
-                num_inference_steps=20,
-                guidance_scale=4.0,
-                height=512,
-                width=512,
-                max_sequence_length=512,
-                text_encoder_out_layers=(9, 18, 27)
-            ).images[0]
+            with inference_ctx:
+                image = pipe(
+                    prompt=prompt,
+                    num_inference_steps=20,
+                    guidance_scale=4.0,
+                    height=512,
+                    width=512,
+                    max_sequence_length=512,
+                    text_encoder_out_layers=(9, 18, 27)
+                ).images[0]
         inference_times.append(time.time() - start)
 
         safe_name = prompt[:40].replace(" ", "_").replace("/", "_")
@@ -61,16 +66,9 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name):
         generated_images.append(image)
         print(f"  [{i+1}/{len(all_prompts)}] done ({inference_times[-1]:.2f}s)")
 
-    # FID
+    # FID — PIL images passed directly; compute_fid disables autocast internally
     print("\n[2/4] Computing FID...")
-    transform_fid = transforms.Compose([
-        transforms.Resize((299, 299)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-    ])
-    real_tensors = torch.stack([transform_fid(img) for img in all_real_images]).to("cuda")
-    gen_tensors = torch.stack([transform_fid(img) for img in generated_images]).to("cuda")
-    fid_score = tracker.compute_fid(real_tensors, gen_tensors)
+    fid_score = tracker.compute_fid(all_real_images, generated_images)
     print(f"  FID: {fid_score:.2f}  (lower is better)")
 
     # CLIP
@@ -82,15 +80,10 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name):
     del clip_model, clip_processor
     torch.cuda.empty_cache()
 
-    # OCR
+    # OCR — returns dict {ocr_exact_match, ocr_word_accuracy}
     print("\n[4/4] Computing OCR accuracy...")
-    ocr_accuracy = tracker.compute_ocr_accuracy(generated_images, all_texts)
-    if ocr_accuracy is not None:
-        print(f"  OCR accuracy: {ocr_accuracy:.4f}  (fraction of images where target text is found)")
-    else:
-        print("  OCR accuracy: skipped")
+    ocr_results = tracker.compute_ocr_accuracy(generated_images, all_texts)
 
-    # Inference stats
     inference_stats = {
         "avg_latency_s": round(float(np.mean(inference_times)), 3),
         "std_latency_s": round(float(np.std(inference_times)), 3),
@@ -102,29 +95,29 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name):
     tracker.record_test_metrics(
         fid=fid_score,
         clip_score=clip_score,
-        ocr_accuracy=ocr_accuracy,
+        ocr_results=ocr_results,
         inference_stats=inference_stats
     )
+
+    em = ocr_results.get("ocr_exact_match", "skipped") if isinstance(ocr_results, dict) else "skipped"
+    wa = ocr_results.get("ocr_word_accuracy", "skipped") if isinstance(ocr_results, dict) else "skipped"
 
     print("\n" + "="*70)
     print("TEST EVALUATION COMPLETE")
     print("="*70)
-    print(f"  FID:          {fid_score:.2f}")
-    print(f"  CLIP score:   {clip_score:.4f}")
-    print(f"  OCR accuracy: {ocr_accuracy}")
-    print(f"  Avg latency:  {inference_stats['avg_latency_s']}s")
-    print(f"  Images:       {output_dir}/")
+    print(f"  FID:               {fid_score:.2f}")
+    print(f"  CLIP score:        {clip_score:.4f}")
+    print(f"  OCR exact match:   {em}")
+    print(f"  OCR word accuracy: {wa}")
+    print(f"  Avg latency:       {inference_stats['avg_latency_s']}s")
+    print(f"  Images saved to:   {output_dir}/")
 
-    return {
-        "fid": fid_score,
-        "clip_score": clip_score,
-        "ocr_accuracy": ocr_accuracy,
-        "inference_stats": inference_stats
-    }
+    return {"fid": fid_score, "clip_score": clip_score,
+            "ocr_exact_match": em, "ocr_word_accuracy": wa,
+            "inference_stats": inference_stats}
 
 
 def compute_val_loss(pipe, model, val_dataloader, dtype):
-    """Run a no-grad forward pass over val set and return average loss."""
     model.eval()
     total_loss = 0
 

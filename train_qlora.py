@@ -76,6 +76,8 @@ def train_qlora(
         local_files_only=True
     )
     pipe.to("cuda")
+    pipe.vae = pipe.vae.to(dtype=torch.bfloat16)
+    pipe.text_encoder = pipe.text_encoder.to(dtype=torch.bfloat16)
 
     model = pipe.transformer
     total_params = sum(p.numel() for p in model.parameters())
@@ -188,7 +190,7 @@ def train_qlora(
                     optimizer.zero_grad()
                     torch.cuda.empty_cache()
 
-                if (batch_idx + 1) % 10 == 0:
+                if (batch_idx + 1) % 50 == 0:
                     allocated = torch.cuda.memory_allocated() / 1024**3
                     print(f"  Epoch {epoch+1} - Batch {batch_idx+1} - GPU: {allocated:.2f}GB")
 
@@ -199,7 +201,7 @@ def train_qlora(
             val_loss = compute_val_loss(pipe, model, val_dataloader, dtype)
             tracker.record_epoch_losses(epoch + 1, train_loss, val_loss)
 
-            if (epoch + 1) % 3 == 0:
+            if (epoch + 1) % 2 == 0:
                 print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
     resource_metrics = monitor.get_metrics()
