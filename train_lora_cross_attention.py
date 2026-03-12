@@ -169,7 +169,7 @@ def train_lora_cross_attention(
             val_loss = compute_val_loss(pipe, model, val_dataloader, dtype)
             tracker.record_epoch_losses(epoch + 1, train_loss, val_loss)
 
-            if (epoch + 1) % 3 == 0:
+            if (epoch + 1) % 2 == 0:
                 print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
     resource_metrics = monitor.get_metrics()
@@ -197,4 +197,4 @@ def train_lora_cross_attention(
 
 
 if __name__ == "__main__":
-    train_lora_cross_attention(rank=16, epochs=10)
+    train_lora_cross_attention(rank=32, epochs=10)

@@ -43,7 +43,7 @@ def train_qlora(
         "lora_alpha": rank * 2,
         "target_modules": ["to_k", "to_v"],
         "epochs": epochs,
-        "learning_rate": 2e-4,
+        "learning_rate": 1e-4,
         "batch_size": 1,
         "gradient_accumulation_steps": 4,
         "weight_decay": 0.01,
@@ -227,4 +227,4 @@ def train_qlora(
 
 
 if __name__ == "__main__":
-    train_qlora(rank=16, epochs=15)
+    train_qlora(rank=16, epochs=10)

@@ -228,7 +228,7 @@ def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epoc
 if __name__ == "__main__":
     results = lora_rank_sweep(
         model_path="models/flux2-klein-base-4b",
-        ranks=[2, 4, 8, 16],
+        ranks=[ 8, 16, 32, 64],
         epochs=10,
         seed=42
     )

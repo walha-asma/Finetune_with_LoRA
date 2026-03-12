@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
-BASE_DIR = Path("../dataset/dataset_output/v1")
+BASE_DIR = Path("data")
 
 
 class ImagePromptDataset(Dataset):
@@ -14,7 +14,15 @@ class ImagePromptDataset(Dataset):
         assert dataset_json.exists(), f"{dataset_json} not found"
 
         with open(dataset_json, "r", encoding="utf-8") as f:
-            self.samples = json.load(f)
+            data = json.load(f)
+
+        # Handle {"split": ..., "count": ..., "data": [...]} wrapper format
+        if isinstance(data, list):
+            self.samples = data
+        elif isinstance(data, dict) and "data" in data:
+            self.samples = data["data"]
+        else:
+            self.samples = list(data.values())
 
         assert len(self.samples) > 0, "Dataset is empty"
 

@@ -20,6 +20,7 @@ tqdm
 
 # Evaluation
 clean-fid
+easyocr
 
 # Model download
 huggingface-hub

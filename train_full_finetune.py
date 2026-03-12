@@ -24,7 +24,7 @@ def set_seed(seed=42):
 def full_finetune(
     model_path="models/flux2-klein-base-4b",
     output_dir="models/full_finetune",
-    epochs=3,
+    epochs=5,
     learning_rate=2e-6,
     batch_size=1,
     gradient_accumulation_steps=4,
@@ -179,7 +179,7 @@ def full_finetune(
                     optimizer.zero_grad()
                     torch.cuda.empty_cache()
 
-                if (batch_idx + 1) % 5 == 0:
+                if (batch_idx + 1) % 50 == 0:
                     allocated = torch.cuda.memory_allocated() / 1024**3
                     reserved = torch.cuda.memory_reserved() / 1024**3
                     print(f"  Epoch {epoch+1}/{epochs} - Batch {batch_idx+1}/{len(train_dataloader)} "

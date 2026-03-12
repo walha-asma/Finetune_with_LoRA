@@ -30,7 +30,6 @@ class MetricsTracker:
             log_level="error"
         )
 
-    # === Training ===
 
     def start_training(self):
         self.emissions_tracker.start()
@@ -62,8 +61,6 @@ class MetricsTracker:
             entry["val_loss"] = round(val_loss, 4)
         self.metrics["training"]["loss_curve"].append(entry)
 
-    # === FID ===
-
     def compute_fid(self, real_images, generated_images):
         inception = inception_v3(pretrained=True, transform_input=False).eval().to("cuda")
         inception.fc = torch.nn.Identity()
@@ -86,8 +83,6 @@ class MetricsTracker:
         fid = ssdiff + np.trace(sigma1 + sigma2 - 2 * covmean)
         return float(fid)
 
-    # === CLIP ===
-
     def compute_clip_score(self, images, prompts, clip_model, clip_processor):
         with torch.no_grad():
             inputs = clip_processor(
@@ -99,32 +94,42 @@ class MetricsTracker:
             similarity = outputs.logits_per_image.mean().item()
         return round(similarity, 4)
 
-    # === OCR Accuracy ===
-
     def compute_ocr_accuracy(self, images, expected_texts):
         """
-        For each generated image, run Tesseract and check if the expected
+        For each generated image, run EasyOCR and check if the expected
         text appears in the OCR output (case-insensitive).
-        Returns accuracy as a float between 0 and 1.
+        Returns accuracy as a float between 0 and 1, or -1.0 if unavailable.
+        EasyOCR is a pure-Python OCR engine with no system dependencies.
         """
         try:
-            import pytesseract
+            import easyocr
         except ImportError:
-            print("pytesseract not installed, skipping OCR accuracy")
-            return None
+            print("  [WARNING] easyocr not installed. Run: pip install easyocr --break-system-packages")
+            return -1.0
 
-        correct = 0
-        for image, expected in zip(images, expected_texts):
-            if not expected:
-                continue
-            ocr_output = pytesseract.image_to_string(image).lower()
-            if expected.lower() in ocr_output:
-                correct += 1
+        try:
+            # Initialize once with GPU if available
+            reader = easyocr.Reader(['en'], gpu=torch.cuda.is_available(), verbose=False)
 
-        accuracy = correct / len(expected_texts) if expected_texts else 0
-        return round(accuracy, 4)
+            correct = 0
+            total = 0
+            for image, expected in zip(images, expected_texts):
+                if not expected:
+                    continue
+                total += 1
+                img_np = np.array(image)
+                results = reader.readtext(img_np, detail=0)  
+                ocr_output = " ".join(results).lower()
+                if expected.lower() in ocr_output:
+                    correct += 1
 
-    # === Record metrics ===
+            accuracy = correct / total if total > 0 else 0.0
+            return round(accuracy, 4)
+
+        except Exception as e:
+            print(f"  [WARNING] OCR failed: {e}")
+            return -1.0
+
 
     def record_validation_metrics(self, val_loss):
         self.metrics["validation"]["val_loss"] = round(val_loss, 4)
@@ -133,12 +138,10 @@ class MetricsTracker:
         self.metrics["test"] = {
             "fid": round(fid, 2) if fid is not None else None,
             "clip_score": round(clip_score, 4) if clip_score is not None else None,
-            "ocr_accuracy": round(ocr_accuracy, 4) if ocr_accuracy is not None else None,
+            "ocr_accuracy": round(ocr_accuracy, 4) if (ocr_accuracy is not None and ocr_accuracy >= 0) else "skipped",
         }
         if inference_stats:
             self.metrics["inference"] = inference_stats
-
-    # === Save / Print ===
 
     def save(self):
         output_file = self.output_dir / f"{self.experiment_name}.json"
