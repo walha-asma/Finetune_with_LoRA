@@ -1,22 +1,19 @@
-"""
-LoRA fine-tuning of FLUX.2-Klein-4B transformer.
-Optimized for small datasets (30 images).
-"""
-
 import torch
 import random
 import numpy as np
 from diffusers import Flux2KleinPipeline
 from peft import LoraConfig, get_peft_model
 from transformers import get_cosine_schedule_with_warmup
-from dataset_loader import get_dataloader
+from dataset_loader import get_train_dataloader, get_val_dataloader, get_test_dataloader
 from metrics_utils import MetricsTracker
+from evaluation import compute_val_loss, evaluate_on_test_set
+from src.monitoring import ResourceMonitor
 import json
 from pathlib import Path
 import time
 
+
 def set_seed(seed=42):
-    """Fix random seeds for reproducibility."""
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -24,20 +21,15 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
+
 def train_lora_rank(rank, model_path, epochs=10, seed=42):
-    """
-    Train LoRA with specific rank on FLUX.2-Klein.
-    Optimized for 30 images dataset.
-    """
-    
     set_seed(seed)
-    
+
     experiment_name = f"lora_flux2klein_rank{rank}"
     print(f"\n{'='*60}")
     print(f"LORA FLUX.2-KLEIN - RANK {rank}")
     print(f"{'='*60}")
-    
-    # Configuration
+
     config = {
         "experiment": experiment_name,
         "model_path": model_path,
@@ -49,38 +41,25 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
         "gradient_accumulation_steps": 4,
         "weight_decay": 0.01,
         "lora_dropout": 0.1,
-        "target_modules": [
-            "to_q", "to_k", "to_v", "to_out.0",  # Attention
-            "ff.net.0.proj", "ff.net.2"  # FFN
-        ],
-        "seed": seed,
-        "trainable": "lora_adapters",
-        "frozen": "base_model+text_encoder+vae"
+        "target_modules": ["to_q", "to_k", "to_v", "to_out.0", "ff.net.0.proj", "ff.net.2"],
+        "seed": seed
     }
-    
+
     tracker = MetricsTracker(experiment_name)
-    
-    # Load model
+
     print("\n[1/5] Loading model...")
     dtype = torch.bfloat16
-    
-    pipe = Flux2KleinPipeline.from_pretrained(
-        model_path,
-        torch_dtype=dtype,
-        local_files_only=True
-    )
+    pipe = Flux2KleinPipeline.from_pretrained(model_path, torch_dtype=dtype, local_files_only=True)
     pipe.to("cuda")
-    
+
     model = pipe.transformer
     total_params = sum(p.numel() for p in model.parameters())
-    
-    # Freeze text encoder and VAE
+
     for param in pipe.text_encoder.parameters():
         param.requires_grad = False
     for param in pipe.vae.parameters():
         param.requires_grad = False
-    
-    # Configure LoRA - SANS task_type
+
     print(f"\n[2/5] Configuring LoRA (rank={rank})...")
     lora_config = LoraConfig(
         r=rank,
@@ -88,289 +67,168 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
         target_modules=config["target_modules"],
         lora_dropout=0.1,
         bias="none"
-        # ← PAS DE task_type pour les diffusion transformers
     )
-    
-    # Apply LoRA
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
-    
-    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"\nTotal parameters: {total_params:,}")
-    print(f"Trainable (LoRA): {trainable_params:,} ({trainable_params/total_params*100:.3f}%)")
-    
-    # Load dataset
+
     print("\n[3/5] Loading dataset...")
-    #dataloader = get_dataloader(batch_size=1) # Load dataset with default path: simple prompts
-    #print(f"Dataset size: {len(dataloader.dataset)} images, simple prompts")
-    
-    # If you want dataset with detailed prompts
-    dataloader = get_dataloader("data/dataset_detailed.json",batch_size=1) # Load dataset with detailed prompts
-    print(f"Dataset size: {len(dataloader.dataset)} images, detailed prompts")
-    
-    # Optimizer
+    train_dataloader = get_train_dataloader(batch_size=1)
+    val_dataloader = get_val_dataloader(batch_size=1)
+    test_dataloader = get_test_dataloader(batch_size=1)
+    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)} | Test: {len(test_dataloader.dataset)}")
+
     print("\n[4/5] Setting up optimizer...")
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=1e-4,
-        betas=(0.9, 0.999),
-        weight_decay=0.01
-    )
-    
-    total_steps = epochs * len(dataloader) // 4  # gradient accumulation
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, betas=(0.9, 0.999), weight_decay=0.01)
+    total_steps = epochs * len(train_dataloader) // 4
     lr_scheduler = get_cosine_schedule_with_warmup(
         optimizer,
         num_warmup_steps=int(0.1 * total_steps),
         num_training_steps=total_steps
     )
-    
-    print(f"Learning rate: 1e-4")
-    print(f"Total epochs: {epochs}")
-    print(f"Steps per epoch: {len(dataloader)}")
-    
-    # Training
+
     print("\n[5/5] Training...")
-    tracker.start_training()
-    
+    gradient_accumulation_steps = 4
     model.train()
     pipe.text_encoder.eval()
     pipe.vae.eval()
     optimizer.zero_grad()
-    
-    gradient_accumulation_steps = 4
-    
-    for epoch in range(epochs):
-        epoch_loss = 0
-        
-        for batch_idx, batch in enumerate(dataloader):
-            images = batch['image'].to("cuda", dtype=dtype)
-            prompts = batch['prompt']
-            
-            with torch.amp.autocast('cuda', dtype=dtype):
-                # Encode images to latents
-                with torch.no_grad():
-                    image_latents = pipe.vae.encode(images).latent_dist.sample()
-                    image_latents = pipe._patchify_latents(image_latents)
-                    latents_bn_mean = pipe.vae.bn.running_mean.view(1, -1, 1, 1).to(image_latents.device, image_latents.dtype)
-                    latents_bn_std = torch.sqrt(pipe.vae.bn.running_var.view(1, -1, 1, 1) + pipe.vae.config.batch_norm_eps)
-                    latents = (image_latents - latents_bn_mean) / latents_bn_std
-                    del image_latents
-                
-                # Flow matching noise
-                noise = torch.randn_like(latents)
-                timesteps = torch.rand(latents.shape[0], device="cuda")
-                timesteps_expanded = timesteps.view(-1, 1, 1, 1)
-                noisy_latents = (1 - timesteps_expanded) * latents + timesteps_expanded * noise
-                target = noise - latents
-                
-                del noise, timesteps_expanded
-                
-                # Encode prompts
-                with torch.no_grad():
-                    prompt_embeds, text_ids = pipe.encode_prompt(
-                        prompt=prompts,
-                        device="cuda",
-                        num_images_per_prompt=1,
-                        max_sequence_length=512,
-                        text_encoder_out_layers=(9, 18, 27)
-                    )
-                
-                # Pack latents
-                noisy_latents_packed = pipe._pack_latents(noisy_latents)
-                latent_ids = pipe._prepare_latent_ids(noisy_latents).to("cuda")
-                del noisy_latents
-                
-                # Predict velocity
-                velocity_pred = model(
-                    hidden_states=noisy_latents_packed,
-                    timestep=timesteps,
-                    guidance=None,
-                    encoder_hidden_states=prompt_embeds,
-                    txt_ids=text_ids,
-                    img_ids=latent_ids,
-                    return_dict=False
-                )[0]
-                
-                # Compute loss
-                velocity_pred_unpacked = pipe._unpack_latents_with_ids(velocity_pred, latent_ids)
-                target_packed = pipe._pack_latents(target)
-                target_unpacked = pipe._unpack_latents_with_ids(target_packed, latent_ids)
-                
-                del velocity_pred, target_packed, noisy_latents_packed
-                
-                loss = torch.nn.functional.mse_loss(velocity_pred_unpacked, target_unpacked)
-                loss = loss / gradient_accumulation_steps
-                
-                del velocity_pred_unpacked, target_unpacked
-            
-            loss.backward()
-            
-            if (batch_idx + 1) % gradient_accumulation_steps == 0:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                optimizer.step()
-                lr_scheduler.step()
-                optimizer.zero_grad()
-                torch.cuda.empty_cache()
-            
-            epoch_loss += loss.item() * gradient_accumulation_steps
-            del loss, images, latents, target
-        
-        avg_loss = epoch_loss / len(dataloader)
-        if (epoch + 1) % 2 == 0:
-            print(f"Epoch {epoch+1}/{epochs} - Loss: {avg_loss:.4f}")
-    
+
+    tracker.start_training()
+
+    with ResourceMonitor(sample_rate_hz=10.0) as monitor:
+        for epoch in range(epochs):
+            epoch_loss = 0
+
+            for batch_idx, batch in enumerate(train_dataloader):
+                images = batch["image"].to("cuda", dtype=dtype)
+                prompts = batch["prompt"]
+
+                with torch.amp.autocast("cuda", dtype=dtype):
+                    with torch.no_grad():
+                        image_latents = pipe.vae.encode(images).latent_dist.sample()
+                        image_latents = pipe._patchify_latents(image_latents)
+                        latents_bn_mean = pipe.vae.bn.running_mean.view(1, -1, 1, 1).to(image_latents.device, image_latents.dtype)
+                        latents_bn_std = torch.sqrt(pipe.vae.bn.running_var.view(1, -1, 1, 1) + pipe.vae.config.batch_norm_eps)
+                        latents = (image_latents - latents_bn_mean) / latents_bn_std
+                        del image_latents
+
+                    noise = torch.randn_like(latents)
+                    timesteps = torch.rand(latents.shape[0], device="cuda")
+                    timesteps_expanded = timesteps.view(-1, 1, 1, 1)
+                    noisy_latents = (1 - timesteps_expanded) * latents + timesteps_expanded * noise
+                    target = noise - latents
+                    del noise, timesteps_expanded
+
+                    with torch.no_grad():
+                        prompt_embeds, text_ids = pipe.encode_prompt(
+                            prompt=prompts, device="cuda", num_images_per_prompt=1,
+                            max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
+                        )
+
+                    noisy_latents_packed = pipe._pack_latents(noisy_latents)
+                    latent_ids = pipe._prepare_latent_ids(noisy_latents).to("cuda")
+                    del noisy_latents
+
+                    velocity_pred = model(
+                        hidden_states=noisy_latents_packed,
+                        timestep=timesteps,
+                        guidance=None,
+                        encoder_hidden_states=prompt_embeds,
+                        txt_ids=text_ids,
+                        img_ids=latent_ids,
+                        return_dict=False
+                    )[0]
+
+                    velocity_pred_unpacked = pipe._unpack_latents_with_ids(velocity_pred, latent_ids)
+                    target_packed = pipe._pack_latents(target)
+                    target_unpacked = pipe._unpack_latents_with_ids(target_packed, latent_ids)
+                    del velocity_pred, target_packed, noisy_latents_packed
+
+                    loss = torch.nn.functional.mse_loss(velocity_pred_unpacked, target_unpacked)
+                    loss = loss / gradient_accumulation_steps
+                    del velocity_pred_unpacked, target_unpacked
+
+                loss.backward()
+
+                if (batch_idx + 1) % gradient_accumulation_steps == 0:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                    optimizer.step()
+                    lr_scheduler.step()
+                    optimizer.zero_grad()
+                    torch.cuda.empty_cache()
+
+                epoch_loss += loss.item() * gradient_accumulation_steps
+                del loss, images, latents, target
+
+            train_loss = epoch_loss / len(train_dataloader)
+            val_loss = compute_val_loss(pipe, model, val_dataloader, dtype)
+            tracker.record_epoch_losses(epoch + 1, train_loss, val_loss)
+
+            if (epoch + 1) % 2 == 0:
+                print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
+
+    resource_metrics = monitor.get_metrics()
+    resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
+
     tracker.end_training(model, total_params)
-    
-    # Save LoRA adapters only
+    tracker.record_validation_metrics(val_loss)
+
+    # Save adapters
     output_dir = f"models/lora_flux2klein/rank_{rank}"
-    print(f"\nSaving LoRA adapters to {output_dir}...")
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output_dir)
-    
-    # Also save config for easy loading
     with open(Path(output_dir) / "training_config.json", "w") as f:
         json.dump(config, f, indent=2)
-    
-    # Generate test images
-    print("\nGenerating test images...")
+
+    # Test evaluation
     model.eval()
-    
-    with open("data/test_prompts.json") as f:
-        test_prompts = json.load(f)
-    
-    image_output_dir = Path(f"results/generated_images/{experiment_name}")
-    image_output_dir.mkdir(parents=True, exist_ok=True)
-    
-    inference_times = []
-    generated_files = []
-    
-    for i, prompt in enumerate(test_prompts):
-        print(f"  [{i+1}/{len(test_prompts)}] {prompt}")
-        
-        torch.cuda.empty_cache()
-        
-        start_time = time.time()
-        with torch.no_grad():
-            image = pipe(
-                prompt=prompt,
-                num_inference_steps=20,
-                guidance_scale=4.0,
-                height=512,
-                width=512,
-                max_sequence_length=512,
-                text_encoder_out_layers=(9, 18, 27)
-            ).images[0]
-        inference_time = time.time() - start_time
-        inference_times.append(inference_time)
-        
-        safe_name = prompt[:50].replace(' ', '_').replace('/', '_')
-        filename = f"{i:02d}_{safe_name}.png"
-        filepath = image_output_dir / filename
-        image.save(filepath)
-        
-        generated_files.append({
-            "prompt": prompt,
-            "filename": filename,
-            "filepath": str(filepath),
-            "inference_time": inference_time
-        })
-    
-    print(f"\n✓ Images saved to: {image_output_dir}/")
-    
-    # Save metadata
-    generation_metadata = {
-        "experiment": experiment_name,
-        "test_prompts": test_prompts,
-        "generated_files": generated_files,
-        "inference_stats": {
-            "avg_latency_s": float(np.mean(inference_times)),
-            "std_latency_s": float(np.std(inference_times)),
-            "min_latency_s": float(np.min(inference_times)),
-            "max_latency_s": float(np.max(inference_times)),
-            "throughput_img_per_s": 1.0 / np.mean(inference_times)
-        },
-        "output_directory": str(image_output_dir)
-    }
-    
-    (image_output_dir / "generation_metadata.json").write_text(json.dumps(generation_metadata, indent=2))
-    (image_output_dir / "config.json").write_text(json.dumps(config, indent=2))
-    
-    # Save metrics
-    Path("results/metrics").mkdir(parents=True, exist_ok=True)
-    tracker.record_quality_metrics(fid_score=None, clip_score=None, val_loss=avg_loss)
-    tracker.metrics["inference"] = generation_metadata["inference_stats"]
+    evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name)
+
     tracker.metrics["config"] = config
     tracker.save()
     tracker.print_summary()
-    
+
     print(f"\n✓ LoRA rank {rank} complete")
-    print(f"✓ Adapters: {output_dir}/")
-    print(f"✓ Images: {image_output_dir}/")
-    
     return tracker.metrics
 
-def lora_rank_sweep(
-    model_path="models/flux2-klein-base-4b",
-    ranks=[8, 16],
-    epochs=10,
-    seed=42
-):
-    """
-    Sweep through different LoRA ranks and compare results.
-    Recommended ranks for FLUX.2-Klein: 8, 16
-    """
-    
+
+def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epochs=10, seed=42):
     print("\n" + "="*60)
-    print("LORA RANK SWEEP: FLUX.2-Klein Transformer")
+    print("LORA RANK SWEEP")
     print("="*60)
-    print(f"Ranks to test: {ranks}")
-    print(f"Epochs: {epochs}")
-    print(f"Random seed: {seed}\n")
-    
+
     all_results = {}
-    
+
     for rank in ranks:
         metrics = train_lora_rank(rank, model_path, epochs=epochs, seed=seed)
         all_results[f"rank_{rank}"] = metrics
-        
-        # Clear memory between ranks
         torch.cuda.empty_cache()
-    
-    # Compare results
+
     print("\n" + "="*60)
     print("RANK COMPARISON")
     print("="*60)
-    
-    print("\nTraining efficiency:")
     for rank in ranks:
         m = all_results[f"rank_{rank}"]
         params = m["training"]["trainable_params"]
         vram = m["training"]["peak_vram_gb"]
-        time_h = m["training"]["training_time_hours"]
-        loss = m["quality"]["validation_loss"]
-        print(f"  Rank {rank:2d}: {params:,} params, {vram:.2f} GB, {time_h:.3f}h, loss={loss:.4f}")
-    
-    # Save comparison
+        val_loss = m["validation"].get("val_loss", "N/A")
+        fid = m["test"].get("fid", "N/A")
+        ocr = m["test"].get("ocr_accuracy", "N/A")
+        print(f"  Rank {rank:2d}: params={params:,} | vram={vram:.2f}GB | val_loss={val_loss} | fid={fid} | ocr={ocr}")
+
     comparison_file = Path("results/metrics/lora_rank_comparison.json")
     comparison_file.parent.mkdir(parents=True, exist_ok=True)
     with open(comparison_file, "w") as f:
         json.dump(all_results, f, indent=2)
-    
-    print(f"\n✓ Rank sweep complete")
-    print(f"✓ Comparison: {comparison_file}")
-    print(f"\nRecommendation: Check generated images to choose best rank")
-    print(f"Usually rank 8-16 is a good balance for fine-tuning")
-    
+
+    print(f"\n✓ Comparison saved to {comparison_file}")
     return all_results
 
+
 if __name__ == "__main__":
-    # Test single rank first
-    # train_lora_rank(rank=8, model_path="models/flux2-klein-base-4b", epochs=10)
-    
-    # Or run full sweep
     results = lora_rank_sweep(
         model_path="models/flux2-klein-base-4b",
-        ranks=[2,4,8,16], 
+        ranks=[2, 4, 8, 16],
         epochs=10,
         seed=42
     )

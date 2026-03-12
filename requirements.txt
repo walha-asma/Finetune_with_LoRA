@@ -1,0 +1,25 @@
+# Core dependencies
+torch>=2.0.0
+torchvision
+diffusers>=0.27.0
+transformers>=4.38.0
+
+# LoRA & Quantization
+peft>=0.8.0
+bitsandbytes>=0.41.0
+
+# Metrics & Monitoring
+codecarbon>=2.3.0
+scipy
+pillow
+numpy
+
+# Training utilities
+accelerate>=0.26.0
+tqdm
+
+# Evaluation
+clean-fid
+
+# Model download
+huggingface-hub
