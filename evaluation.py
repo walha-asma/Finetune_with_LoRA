@@ -46,6 +46,8 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name, use_au
     inference_ctx = torch.autocast("cuda", dtype=torch.bfloat16) if use_autocast else nullcontext()
 
     for i, prompt in enumerate(all_prompts):
+        torch.manual_seed(42 + i)
+        torch.cuda.manual_seed(42 + i)
         torch.cuda.empty_cache()
         start = time.time()
         with torch.no_grad():

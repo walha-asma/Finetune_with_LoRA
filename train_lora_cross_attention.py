@@ -23,7 +23,7 @@ def set_seed(seed=42):
 
 def train_lora_cross_attention(
     model_path="models/flux2-klein-base-4b",
-    output_dir="models/lora_cross_attention",
+    output_dir="models/lora_cross_attention_Rank",
     rank=16,
     epochs=15,
     seed=42

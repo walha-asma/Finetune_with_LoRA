@@ -37,9 +37,14 @@ EXPERIMENTS = [
         "model_path": "models/lora_flux2klein/rank_64",
     },
     {
+        "name": "lora_cross_attention_rank16",
+        "type": "lora",
+        "model_path": "models/lora_cross_attention/rank_16",
+    },
+    {
         "name": "lora_cross_attention_rank32",
         "type": "lora",
-        "model_path": "models/lora_cross_attention",
+        "model_path": "models/lora_cross_attention/rank_32",
     },
     {
         "name": "qlora_cross_attention_rank16",
@@ -52,9 +57,6 @@ EXPERIMENTS = [
 def load_pipeline(experiment):
     exp_type = experiment["type"]
     path = experiment["model_path"]
-    
-    torch.manual_seed(42)
-    torch.cuda.manual_seed(42)
 
     if exp_type == "full":
         pipe = Flux2KleinPipeline.from_pretrained(
@@ -115,8 +117,6 @@ def evaluate_all():
         pipe = load_pipeline(exp)
         pipe.transformer.eval()
 
-        # use_autocast=True only for QLoRA — fixes bfloat16/float32 VAE mismatch.
-        # DO NOT wrap non-QLoRA models in autocast — it causes FID to fail.
         use_autocast = exp["type"] == "qlora"
         evaluate_on_test_set(pipe, tracker, test_dataloader, name, use_autocast=use_autocast)
 
