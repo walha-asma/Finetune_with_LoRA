@@ -247,6 +247,101 @@ def plot_loss_curves(all_metrics):
     print(f"  ✓ {out}")
 
 
+def plot_trainable_params_vs_rank(all_metrics):
+    """
+    Bar chart: trainable parameter count vs rank for each experiment group.
+    Three groups side by side: LoRA full, CA-LoRA, QLoRA.
+    Annotates each bar with the trainable % of total params.
+    """
+
+    # Group order and metadata
+    groups = [
+        {
+            "label": "LoRA (full)",
+            "experiments": [
+                "lora_flux2klein_rank8",
+                "lora_flux2klein_rank16",
+                "lora_flux2klein_rank32",
+                "lora_flux2klein_rank64",
+            ],
+            "rank_key": lambda name: int(name.split("rank")[-1]),
+            "color_base": "#3B8BD4",
+            "colors": ["#85B7EB", "#3B8BD4", "#2A6FBB", "#0F3D80"],
+        },
+        {
+            "label": "CA-LoRA",
+            "experiments": [
+                "lora_cross_attention_rank16",
+                "lora_cross_attention_rank32",
+            ],
+            "rank_key": lambda name: int(name.split("rank")[-1]),
+            "color_base": "#1D9E75",
+            "colors": ["#5DCAA5", "#0F6E56"],
+        },
+        {
+            "label": "QLoRA",
+            "experiments": [
+                "qlora_cross_attention_rank16",
+            ],
+            "rank_key": lambda name: int(name.split("rank")[-1]),
+            "color_base": "#BA7517",
+            "colors": ["#BA7517"],
+        },
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(14, 6),
+                             gridspec_kw={"width_ratios": [4, 2, 1]})
+    fig.suptitle("Trainable Parameters vs Rank", fontsize=14, fontweight="bold", y=1.01)
+
+    for ax, group in zip(axes, groups):
+        ranks, params, pcts, colors = [], [], [], []
+
+        for exp_name, color in zip(group["experiments"], group["colors"]):
+            m = all_metrics.get(exp_name)
+            if m is None:
+                continue
+            n_params = safe(m, "training", "trainable_params")
+            pct      = safe(m, "training", "trainable_percentage")
+            rank     = group["rank_key"](exp_name)
+            if n_params is None:
+                continue
+            ranks.append(f"r={rank}")
+            params.append(n_params / 1e6)   # millions
+            pcts.append(pct if pct is not None else 0.0)
+            colors.append(color)
+
+        if not ranks:
+            ax.set_visible(False)
+            continue
+
+        x = range(len(ranks))
+        bars = ax.bar(x, params, color=colors, edgecolor="white",
+                      linewidth=0.8, width=0.55)
+
+        # Annotate each bar: M params + %
+        for bar, pct in zip(bars, pcts):
+            h = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width() / 2,
+                    h + max(params) * 0.02,
+                    f"{h:.1f}M\n({pct:.2f}%)",
+                    ha="center", va="bottom", fontsize=9, color="#333333")
+
+        ax.set_xticks(list(x))
+        ax.set_xticklabels(ranks, fontsize=10)
+        ax.set_title(group["label"], fontsize=12, fontweight="bold", pad=8)
+        ax.set_ylabel("Trainable params (M)" if ax == axes[0] else "", fontsize=10)
+        ax.set_ylim(0, max(params) * 1.35)
+        ax.grid(axis="y", linestyle="--", alpha=0.4)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+
+    plt.tight_layout()
+    out = PLOTS_DIR / "trainable_params_vs_rank.png"
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"  ✓ {out}")
+
+
 def main():
     print("=" * 60)
     print("GENERATING PLOTS")
@@ -267,6 +362,7 @@ def main():
     plot_radar(all_metrics)
     plot_adapter_sizes(all_metrics)
     plot_loss_curves(all_metrics)
+    plot_trainable_params_vs_rank(all_metrics)
 
     print(f"\n All plots saved to {PLOTS_DIR.absolute()}/")
     print("=" * 60)
