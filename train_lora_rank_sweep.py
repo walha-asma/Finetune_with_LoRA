@@ -4,9 +4,9 @@ import numpy as np
 from diffusers import Flux2KleinPipeline
 from peft import LoraConfig, get_peft_model
 from transformers import get_cosine_schedule_with_warmup
-from dataset_loader import get_train_dataloader, get_val_dataloader, get_test_dataloader
+from dataset_loader import get_train_dataloader, get_val_dataloader
 from metrics_utils import MetricsTracker
-from evaluation import compute_val_loss, evaluate_on_test_set
+from evaluation import compute_val_loss
 from src.monitoring import ResourceMonitor
 import json
 from pathlib import Path
@@ -22,7 +22,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 
-def train_lora_rank(rank, model_path, epochs=10, seed=42):
+def train_lora_rank(rank, model_path, epochs=20, seed=42):
     set_seed(seed)
 
     experiment_name = f"lora_flux2klein_rank{rank}"
@@ -74,8 +74,7 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
     print("\n[3/5] Loading dataset...")
     train_dataloader = get_train_dataloader(batch_size=1)
     val_dataloader = get_val_dataloader(batch_size=1)
-    test_dataloader = get_test_dataloader(batch_size=1)
-    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)} | Test: {len(test_dataloader.dataset)}")
+    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)}")
 
     print("\n[4/5] Setting up optimizer...")
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, betas=(0.9, 0.999), weight_decay=0.01)
@@ -170,7 +169,6 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
 
-    tracker.end_training(model, total_params)
     tracker.record_validation_metrics(val_loss)
 
     # Save adapters
@@ -180,9 +178,9 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
     with open(Path(output_dir) / "training_config.json", "w") as f:
         json.dump(config, f, indent=2)
 
-    # Test evaluation
+    tracker.end_training(model, total_params, output_dir=output_dir)
+
     model.eval()
-    evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name)
 
     tracker.metrics["config"] = config
     tracker.save()
@@ -192,7 +190,7 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
     return tracker.metrics
 
 
-def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epochs=10, seed=42):
+def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epochs=20, seed=42):
     print("\n" + "="*60)
     print("LORA RANK SWEEP")
     print("="*60)
@@ -229,6 +227,6 @@ if __name__ == "__main__":
     results = lora_rank_sweep(
         model_path="models/flux2-klein-base-4b",
         ranks=[ 8, 16, 32, 64],
-        epochs=10,
+        epochs=20,
         seed=42
     )

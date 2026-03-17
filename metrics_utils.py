@@ -33,7 +33,7 @@ class MetricsTracker:
         self.training_start_time = time.time()
         torch.cuda.reset_peak_memory_stats()
 
-    def end_training(self, model, total_params):
+    def end_training(self, model, total_params, output_dir=None):
         emissions = self.emissions_tracker.stop()
         training_time = time.time() - self.training_start_time
 
@@ -41,13 +41,23 @@ class MetricsTracker:
         trainable_percentage = (trainable_params / total_params) * 100
         peak_vram_gb = torch.cuda.max_memory_allocated() / (1024**3)
 
+        # Adapter / checkpoint size on disk
+        adapter_size_mb = None
+        if output_dir is not None:
+            import os
+            safetensors = list(Path(output_dir).rglob("*.safetensors"))
+            if safetensors:
+                total_bytes = sum(f.stat().st_size for f in safetensors)
+                adapter_size_mb = round(total_bytes / (1024 ** 2), 2)
+
         self.metrics["training"] = {
             "trainable_params": trainable_params,
             "trainable_percentage": round(trainable_percentage, 2),
             "peak_vram_gb": round(peak_vram_gb, 2),
             "energy_kwh": round(emissions, 6) if emissions else 0,
             "carbon_gco2eq": round(emissions * 1000, 2) if emissions else 0,
-            "training_time_hours": round(training_time / 3600, 2)
+            "training_time_hours": round(training_time / 3600, 2),
+            "adapter_size_mb": adapter_size_mb,
         }
 
     def record_epoch_losses(self, epoch, train_loss, val_loss=None):
