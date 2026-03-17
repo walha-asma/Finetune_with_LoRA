@@ -5,9 +5,9 @@ from diffusers import Flux2KleinPipeline
 from diffusers.quantizers import PipelineQuantizationConfig
 from peft import LoraConfig, get_peft_model
 from transformers import get_cosine_schedule_with_warmup
-from dataset_loader import get_train_dataloader, get_val_dataloader
+from dataset_loader import get_train_dataloader, get_val_dataloader, get_test_dataloader
 from metrics_utils import MetricsTracker
-from evaluation import compute_val_loss
+from evaluation import compute_val_loss, evaluate_on_test_set
 from src.monitoring import ResourceMonitor
 import json
 from pathlib import Path
@@ -26,7 +26,7 @@ def train_qlora(
     model_path="models/flux2-klein-base-4b",
     output_dir="models/qlora_cross_attention",
     rank=16,
-    epochs=20,
+    epochs=15,
     seed=42
 ):
     set_seed(seed)
@@ -43,7 +43,7 @@ def train_qlora(
         "lora_alpha": rank * 2,
         "target_modules": ["to_k", "to_v"],
         "epochs": epochs,
-        "learning_rate": 3e-4,
+        "learning_rate": 1e-4,
         "batch_size": 1,
         "gradient_accumulation_steps": 4,
         "weight_decay": 0.01,
@@ -104,12 +104,13 @@ def train_qlora(
     print("\n[3/5] Loading dataset...")
     train_dataloader = get_train_dataloader(batch_size=1)
     val_dataloader = get_val_dataloader(batch_size=1)
-    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)}")
+    test_dataloader = get_test_dataloader(batch_size=1)
+    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)} | Test: {len(test_dataloader.dataset)}")
 
     print("\n[4/5] Setting up 8-bit optimizer...")
     import bitsandbytes as bnb
     optimizer = bnb.optim.AdamW8bit(
-        model.parameters(), lr=3e-4, betas=(0.9, 0.999), weight_decay=0.01
+        model.parameters(), lr=2e-4, betas=(0.9, 0.999), weight_decay=0.01
     )
     total_steps = epochs * len(train_dataloader) // 4
     lr_scheduler = get_cosine_schedule_with_warmup(
@@ -126,6 +127,11 @@ def train_qlora(
     optimizer.zero_grad()
 
     tracker.start_training()
+
+    best_val_loss = float("inf")
+    best_epoch    = 0
+    best_ckpt_dir = "models/qlora_cross_attention_best"
+    Path(best_ckpt_dir).mkdir(parents=True, exist_ok=True)
 
     with ResourceMonitor(sample_rate_hz=10.0) as monitor:
         for epoch in range(epochs):
@@ -203,20 +209,33 @@ def train_qlora(
             if (epoch + 1) % 2 == 0:
                 print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
+            # Best-checkpoint: save adapter whenever val_loss improves
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                best_epoch    = epoch + 1
+                model.save_pretrained(best_ckpt_dir)
+                print(f"  [✓] New best val_loss={best_val_loss:.4f} at epoch {best_epoch} — checkpoint saved")
+
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
 
-    tracker.record_validation_metrics(val_loss)
+    tracker.end_training(model, total_params)
+    tracker.record_validation_metrics(best_val_loss)
 
-    # Save adapters
+    # Load best checkpoint then save to final output_dir
+    print(f"\n  Loading best checkpoint (epoch {best_epoch}, val_loss={best_val_loss:.4f})...")
+    model.load_adapter(best_ckpt_dir)
+    print("  ✓ Best checkpoint loaded")
+
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output_dir)
     with open(Path(output_dir) / "training_config.json", "w") as f:
         json.dump(config, f, indent=2)
+    import shutil; shutil.rmtree(best_ckpt_dir, ignore_errors=True)
 
-    tracker.end_training(model, total_params, output_dir=output_dir)
-
+    # Test evaluation — uses pipe(prompt=...) directly, no manual denoising loop
     model.eval()
+    evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name)
 
     tracker.metrics["config"] = config
     tracker.save()
@@ -227,4 +246,4 @@ def train_qlora(
 
 
 if __name__ == "__main__":
-    train_qlora(rank=16, epochs=20)
+    train_qlora(rank=16, epochs=10)

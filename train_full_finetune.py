@@ -3,9 +3,9 @@ import random
 import numpy as np
 from diffusers import Flux2KleinPipeline
 from transformers import get_cosine_schedule_with_warmup
-from dataset_loader import get_train_dataloader, get_val_dataloader
+from dataset_loader import get_train_dataloader, get_val_dataloader, get_test_dataloader
 from metrics_utils import MetricsTracker
-from evaluation import compute_val_loss
+from evaluation import compute_val_loss, evaluate_on_test_set
 from src.monitoring import ResourceMonitor
 import json
 from pathlib import Path
@@ -24,8 +24,8 @@ def set_seed(seed=42):
 def full_finetune(
     model_path="models/flux2-klein-base-4b",
     output_dir="models/full_finetune",
-    epochs=15,
-    learning_rate=5e-6,
+    epochs=5,
+    learning_rate=2e-6,
     batch_size=1,
     gradient_accumulation_steps=4,
     weight_decay=0.01,
@@ -85,7 +85,8 @@ def full_finetune(
     print("\n[2/5] Loading dataset...")
     train_dataloader = get_train_dataloader(batch_size=batch_size)
     val_dataloader = get_val_dataloader(batch_size=batch_size)
-    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)}")
+    test_dataloader = get_test_dataloader(batch_size=batch_size)
+    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)} | Test: {len(test_dataloader.dataset)}")
 
     print("\n[3/5] Setting up optimizer...")
     try:
@@ -114,6 +115,11 @@ def full_finetune(
     optimizer.zero_grad()
 
     tracker.start_training()
+
+    best_val_loss  = float("inf")
+    best_epoch     = 0
+    best_ckpt_dir  = "models/full_finetune_best"
+    Path(best_ckpt_dir).mkdir(parents=True, exist_ok=True)
 
     with ResourceMonitor(sample_rate_hz=10.0) as monitor:
         for epoch in range(epochs):
@@ -193,17 +199,33 @@ def full_finetune(
             tracker.record_epoch_losses(epoch + 1, train_loss, val_loss)
             print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
+            # Best-checkpoint: save full pipeline whenever val_loss improves
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                best_epoch    = epoch + 1
+                pipe.save_pretrained(best_ckpt_dir)
+                print(f"  [✓] New best val_loss={best_val_loss:.4f} at epoch {best_epoch} — checkpoint saved")
+
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
 
-    tracker.end_training(model, total_params, output_dir=output_dir)
-    tracker.record_validation_metrics(val_loss)
+    tracker.end_training(model, total_params)
+    tracker.record_validation_metrics(best_val_loss)
 
-    print(f"\n[5/5] Saving model to {output_dir}...")
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-    pipe.save_pretrained(output_dir)
+    print(f"\n[5/5] Saving best model (epoch {best_epoch}, val_loss={best_val_loss:.4f}) to {output_dir}...")
+    import shutil
+    # Move best checkpoint to final output_dir
+    if Path(best_ckpt_dir).exists():
+        if Path(output_dir).exists():
+            shutil.rmtree(output_dir)
+        shutil.move(best_ckpt_dir, output_dir)
+    else:
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        pipe.save_pretrained(output_dir)
 
+    # Test evaluation
     model.eval()
+    evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name)
 
     tracker.metrics["config"] = config
     tracker.save()

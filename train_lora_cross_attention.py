@@ -4,9 +4,9 @@ import numpy as np
 from diffusers import Flux2KleinPipeline
 from peft import LoraConfig, get_peft_model
 from transformers import get_cosine_schedule_with_warmup
-from dataset_loader import get_train_dataloader, get_val_dataloader
+from dataset_loader import get_train_dataloader, get_val_dataloader, get_test_dataloader
 from metrics_utils import MetricsTracker
-from evaluation import compute_val_loss
+from evaluation import compute_val_loss, evaluate_on_test_set
 from src.monitoring import ResourceMonitor
 import json
 from pathlib import Path
@@ -23,9 +23,9 @@ def set_seed(seed=42):
 
 def train_lora_cross_attention(
     model_path="models/flux2-klein-base-4b",
-    output_dir=None,  # auto-set to models/lora_cross_attention/rank_{rank}
+    output_dir="models/lora_cross_attention_Rank",
     rank=16,
-    epochs=25,
+    epochs=15,
     seed=42
 ):
     set_seed(seed)
@@ -79,7 +79,8 @@ def train_lora_cross_attention(
     print("\n[3/5] Loading dataset...")
     train_dataloader = get_train_dataloader(batch_size=1)
     val_dataloader = get_val_dataloader(batch_size=1)
-    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)}")
+    test_dataloader = get_test_dataloader(batch_size=1)
+    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)} | Test: {len(test_dataloader.dataset)}")
 
     print("\n[4/5] Setting up optimizer...")
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, betas=(0.9, 0.999), weight_decay=0.01)
@@ -98,6 +99,11 @@ def train_lora_cross_attention(
     optimizer.zero_grad()
 
     tracker.start_training()
+
+    best_val_loss = float("inf")
+    best_epoch    = 0
+    best_ckpt_dir = f"models/lora_cross_attention/rank_{rank}_best"
+    Path(best_ckpt_dir).mkdir(parents=True, exist_ok=True)
 
     with ResourceMonitor(sample_rate_hz=10.0) as monitor:
         for epoch in range(epochs):
@@ -171,22 +177,33 @@ def train_lora_cross_attention(
             if (epoch + 1) % 2 == 0:
                 print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
+            # Best-checkpoint: save adapter whenever val_loss improves
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                best_epoch    = epoch + 1
+                model.save_pretrained(best_ckpt_dir)
+                print(f"  [✓] New best val_loss={best_val_loss:.4f} at epoch {best_epoch} — checkpoint saved")
+
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
 
-    tracker.record_validation_metrics(val_loss)
+    tracker.end_training(model, total_params)
+    tracker.record_validation_metrics(best_val_loss)
 
-    # Save adapters
-    if output_dir is None:
-        output_dir = f"models/lora_cross_attention/rank_{rank}"
+    # Load best checkpoint then save to final output_dir
+    print(f"\n  Loading best checkpoint (epoch {best_epoch}, val_loss={best_val_loss:.4f})...")
+    model.load_adapter(best_ckpt_dir)
+    print("  ✓ Best checkpoint loaded")
+
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output_dir)
     with open(Path(output_dir) / "training_config.json", "w") as f:
         json.dump(config, f, indent=2)
+    import shutil; shutil.rmtree(best_ckpt_dir, ignore_errors=True)
 
-    tracker.end_training(model, total_params, output_dir=output_dir)
-
+    # Test evaluation
     model.eval()
+    evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name)
 
     tracker.metrics["config"] = config
     tracker.save()
@@ -197,9 +214,4 @@ def train_lora_cross_attention(
 
 
 if __name__ == "__main__":
-    for rank in [16, 32]:
-        print(f"\n{'='*60}")
-        print(f"CROSS-ATTENTION LORA - RANK {rank}")
-        print(f"{'='*60}")
-        train_lora_cross_attention(rank=rank, epochs=25)
-        torch.cuda.empty_cache()
+    train_lora_cross_attention(rank=32, epochs=10)

@@ -4,9 +4,9 @@ import numpy as np
 from diffusers import Flux2KleinPipeline
 from peft import LoraConfig, get_peft_model
 from transformers import get_cosine_schedule_with_warmup
-from dataset_loader import get_train_dataloader, get_val_dataloader
+from dataset_loader import get_train_dataloader, get_val_dataloader, get_test_dataloader
 from metrics_utils import MetricsTracker
-from evaluation import compute_val_loss
+from evaluation import compute_val_loss, evaluate_on_test_set
 from src.monitoring import ResourceMonitor
 import json
 from pathlib import Path
@@ -22,7 +22,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 
-def train_lora_rank(rank, model_path, epochs=20, seed=42):
+def train_lora_rank(rank, model_path, epochs=10, seed=42):
     set_seed(seed)
 
     experiment_name = f"lora_flux2klein_rank{rank}"
@@ -74,7 +74,8 @@ def train_lora_rank(rank, model_path, epochs=20, seed=42):
     print("\n[3/5] Loading dataset...")
     train_dataloader = get_train_dataloader(batch_size=1)
     val_dataloader = get_val_dataloader(batch_size=1)
-    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)}")
+    test_dataloader = get_test_dataloader(batch_size=1)
+    print(f"  Train: {len(train_dataloader.dataset)} | Val: {len(val_dataloader.dataset)} | Test: {len(test_dataloader.dataset)}")
 
     print("\n[4/5] Setting up optimizer...")
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, betas=(0.9, 0.999), weight_decay=0.01)
@@ -93,6 +94,11 @@ def train_lora_rank(rank, model_path, epochs=20, seed=42):
     optimizer.zero_grad()
 
     tracker.start_training()
+
+    best_val_loss = float("inf")
+    best_epoch    = 0
+    best_ckpt_dir = f"models/lora_flux2klein/rank_{rank}_best"
+    Path(best_ckpt_dir).mkdir(parents=True, exist_ok=True)
 
     with ResourceMonitor(sample_rate_hz=10.0) as monitor:
         for epoch in range(epochs):
@@ -166,21 +172,35 @@ def train_lora_rank(rank, model_path, epochs=20, seed=42):
             if (epoch + 1) % 2 == 0:
                 print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
+            # Best-checkpoint: save adapter whenever val_loss improves
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                best_epoch    = epoch + 1
+                model.save_pretrained(best_ckpt_dir)
+                print(f"  [✓] New best val_loss={best_val_loss:.4f} at epoch {best_epoch} — checkpoint saved")
+
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
 
-    tracker.record_validation_metrics(val_loss)
+    tracker.end_training(model, total_params)
+    tracker.record_validation_metrics(best_val_loss)
 
-    # Save adapters
+    # Load best checkpoint then save to final output_dir
+    print(f"\n  Loading best checkpoint (epoch {best_epoch}, val_loss={best_val_loss:.4f})...")
+    model.load_adapter(best_ckpt_dir)
+    print("  ✓ Best checkpoint loaded")
+
     output_dir = f"models/lora_flux2klein/rank_{rank}"
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output_dir)
     with open(Path(output_dir) / "training_config.json", "w") as f:
         json.dump(config, f, indent=2)
+    # Clean up temp best-ckpt dir
+    import shutil; shutil.rmtree(best_ckpt_dir, ignore_errors=True)
 
-    tracker.end_training(model, total_params, output_dir=output_dir)
-
+    # Test evaluation
     model.eval()
+    evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name)
 
     tracker.metrics["config"] = config
     tracker.save()
@@ -190,7 +210,7 @@ def train_lora_rank(rank, model_path, epochs=20, seed=42):
     return tracker.metrics
 
 
-def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epochs=20, seed=42):
+def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epochs=10, seed=42):
     print("\n" + "="*60)
     print("LORA RANK SWEEP")
     print("="*60)
@@ -227,6 +247,6 @@ if __name__ == "__main__":
     results = lora_rank_sweep(
         model_path="models/flux2-klein-base-4b",
         ranks=[ 8, 16, 32, 64],
-        epochs=20,
+        epochs=10,
         seed=42
     )
