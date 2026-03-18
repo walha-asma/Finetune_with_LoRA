@@ -1,0 +1,459 @@
+Job ID : 14823
+Node   : ensta-l40s02
+GPU    : NVIDIA L40S
+Date   : mar. 17 mars 2026 22:44:12 CET
+============================================================
+FULL FINE-TUNING - FLUX.2-Klein-4B
+============================================================
+
+[1/5] Loading model...
+Using dtype: torch.bfloat16
+Gradient checkpointing: ENABLED
+Total params: 3,875,544,576 | Trainable: 3,875,544,576 (100.00%)
+
+[2/5] Loading dataset...
+Loaded 400 samples from data/train.json
+Loaded 50 samples from data/val.json
+  Train: 400 | Val: 50
+
+[3/5] Setting up optimizer...
+Using 8-bit AdamW
+
+[4/5] Training...
+  Epoch 1/5 - Batch 5/400 - loss: 1.8036 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 10/400 - loss: 1.6973 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 15/400 - loss: 0.5742 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 20/400 - loss: 1.4871 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 25/400 - loss: 2.1388 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 30/400 - loss: 0.8909 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 35/400 - loss: 1.7823 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 40/400 - loss: 0.6763 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 45/400 - loss: 0.9288 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 50/400 - loss: 0.7637 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 55/400 - loss: 1.2036 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 60/400 - loss: 1.0770 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 65/400 - loss: 0.8899 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 70/400 - loss: 1.3711 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 75/400 - loss: 0.7610 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 80/400 - loss: 0.4094 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 85/400 - loss: 0.5277 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 90/400 - loss: 1.1408 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 95/400 - loss: 1.1718 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 100/400 - loss: 1.1874 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 105/400 - loss: 0.8886 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 110/400 - loss: 0.8352 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 115/400 - loss: 0.3990 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 120/400 - loss: 1.7420 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 125/400 - loss: 1.1063 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 130/400 - loss: 0.3594 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 135/400 - loss: 2.0891 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 140/400 - loss: 1.1158 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 145/400 - loss: 0.5374 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 150/400 - loss: 1.2094 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 155/400 - loss: 1.2259 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 160/400 - loss: 1.3065 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 165/400 - loss: 0.8169 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 170/400 - loss: 0.9416 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 175/400 - loss: 0.6714 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 180/400 - loss: 0.4103 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 185/400 - loss: 0.6334 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 190/400 - loss: 1.1330 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 195/400 - loss: 1.5440 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 200/400 - loss: 0.3779 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 205/400 - loss: 0.6260 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 210/400 - loss: 0.4883 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 215/400 - loss: 0.3798 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 220/400 - loss: 0.8340 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 225/400 - loss: 1.0379 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 230/400 - loss: 1.2527 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 235/400 - loss: 0.6406 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 240/400 - loss: 1.3294 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 245/400 - loss: 1.1207 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 250/400 - loss: 0.8687 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 255/400 - loss: 1.8041 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 260/400 - loss: 1.2422 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 265/400 - loss: 1.8608 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 270/400 - loss: 0.6532 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 275/400 - loss: 1.9680 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 280/400 - loss: 1.1151 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 285/400 - loss: 0.9638 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 290/400 - loss: 1.1584 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 295/400 - loss: 0.3999 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 300/400 - loss: 1.1466 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 305/400 - loss: 1.0295 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 310/400 - loss: 1.1730 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 315/400 - loss: 0.4397 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 320/400 - loss: 0.6755 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 325/400 - loss: 1.0804 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 330/400 - loss: 1.3432 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 335/400 - loss: 1.1277 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 340/400 - loss: 2.0213 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 345/400 - loss: 1.1736 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 350/400 - loss: 0.4952 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 355/400 - loss: 0.6263 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 360/400 - loss: 1.2763 - GPU: 22.37GB/23.07GB
+  Epoch 1/5 - Batch 365/400 - loss: 0.5996 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 370/400 - loss: 1.0081 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 375/400 - loss: 1.0298 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 380/400 - loss: 1.3725 - GPU: 22.37GB/23.04GB
+  Epoch 1/5 - Batch 385/400 - loss: 0.8501 - GPU: 29.59GB/29.80GB
+  Epoch 1/5 - Batch 390/400 - loss: 0.5675 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 395/400 - loss: 1.0524 - GPU: 29.59GB/30.67GB
+  Epoch 1/5 - Batch 400/400 - loss: 0.9018 - GPU: 22.37GB/23.07GB
+Epoch 1/5 - train_loss: 0.9749 | val_loss: 0.9346
+  → Best model saved (val_loss=0.9346)
+  Epoch 2/5 - Batch 5/400 - loss: 1.3246 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 10/400 - loss: 1.1629 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 15/400 - loss: 0.9607 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 20/400 - loss: 0.5353 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 25/400 - loss: 0.9175 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 30/400 - loss: 1.5214 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 35/400 - loss: 1.5987 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 40/400 - loss: 0.6354 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 45/400 - loss: 0.4997 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 50/400 - loss: 0.4983 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 55/400 - loss: 0.5360 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 60/400 - loss: 0.7834 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 65/400 - loss: 0.6226 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 70/400 - loss: 1.1802 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 75/400 - loss: 0.6951 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 80/400 - loss: 1.1470 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 85/400 - loss: 0.5451 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 90/400 - loss: 1.1045 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 95/400 - loss: 0.5450 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 100/400 - loss: 0.6874 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 105/400 - loss: 0.8120 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 110/400 - loss: 0.6266 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 115/400 - loss: 0.6126 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 120/400 - loss: 1.5822 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 125/400 - loss: 0.5312 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 130/400 - loss: 1.3338 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 135/400 - loss: 1.4176 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 140/400 - loss: 0.5368 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 145/400 - loss: 1.1396 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 150/400 - loss: 1.2575 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 155/400 - loss: 1.2070 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 160/400 - loss: 1.2369 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 165/400 - loss: 0.6738 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 170/400 - loss: 1.1292 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 175/400 - loss: 0.7160 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 180/400 - loss: 1.0651 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 185/400 - loss: 0.8938 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 190/400 - loss: 0.9354 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 195/400 - loss: 0.6834 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 200/400 - loss: 0.7990 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 205/400 - loss: 1.3431 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 210/400 - loss: 1.1904 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 215/400 - loss: 1.4513 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 220/400 - loss: 0.9213 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 225/400 - loss: 0.6019 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 230/400 - loss: 0.8437 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 235/400 - loss: 0.8358 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 240/400 - loss: 0.6420 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 245/400 - loss: 0.6257 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 250/400 - loss: 0.5201 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 255/400 - loss: 0.5824 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 260/400 - loss: 0.8863 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 265/400 - loss: 0.9763 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 270/400 - loss: 1.2971 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 275/400 - loss: 0.9563 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 280/400 - loss: 0.5008 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 285/400 - loss: 1.1559 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 290/400 - loss: 0.5988 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 295/400 - loss: 0.5323 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 300/400 - loss: 0.9604 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 305/400 - loss: 1.0530 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 310/400 - loss: 0.6320 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 315/400 - loss: 0.5865 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 320/400 - loss: 0.4824 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 325/400 - loss: 1.0550 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 330/400 - loss: 0.8466 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 335/400 - loss: 1.0242 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 340/400 - loss: 1.3510 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 345/400 - loss: 1.2340 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 350/400 - loss: 1.1874 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 355/400 - loss: 0.6948 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 360/400 - loss: 1.2023 - GPU: 22.37GB/23.07GB
+  Epoch 2/5 - Batch 365/400 - loss: 0.9601 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 370/400 - loss: 0.6115 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 375/400 - loss: 1.0111 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 380/400 - loss: 1.1392 - GPU: 22.37GB/23.04GB
+  Epoch 2/5 - Batch 385/400 - loss: 0.6548 - GPU: 29.59GB/29.80GB
+  Epoch 2/5 - Batch 390/400 - loss: 1.2345 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 395/400 - loss: 0.6506 - GPU: 29.59GB/30.67GB
+  Epoch 2/5 - Batch 400/400 - loss: 1.2082 - GPU: 22.37GB/23.07GB
+Epoch 2/5 - train_loss: 0.9037 | val_loss: 0.8248
+  → Best model saved (val_loss=0.8248)
+  Epoch 3/5 - Batch 5/400 - loss: 0.5932 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 10/400 - loss: 1.2155 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 15/400 - loss: 0.8044 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 20/400 - loss: 0.4602 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 25/400 - loss: 0.6703 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 30/400 - loss: 0.8178 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 35/400 - loss: 0.3966 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 40/400 - loss: 0.7369 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 45/400 - loss: 1.1476 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 50/400 - loss: 0.8229 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 55/400 - loss: 0.6277 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 60/400 - loss: 0.5336 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 65/400 - loss: 1.2791 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 70/400 - loss: 0.6911 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 75/400 - loss: 1.2959 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 80/400 - loss: 0.9042 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 85/400 - loss: 0.7893 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 90/400 - loss: 1.2380 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 95/400 - loss: 1.0231 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 100/400 - loss: 1.0737 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 105/400 - loss: 1.0222 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 110/400 - loss: 1.3299 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 115/400 - loss: 1.2286 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 120/400 - loss: 1.0944 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 125/400 - loss: 0.7615 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 130/400 - loss: 1.2874 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 135/400 - loss: 0.5930 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 140/400 - loss: 0.6840 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 145/400 - loss: 0.4945 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 150/400 - loss: 1.3051 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 155/400 - loss: 1.2596 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 160/400 - loss: 1.0687 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 165/400 - loss: 1.0684 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 170/400 - loss: 1.2854 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 175/400 - loss: 0.8257 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 180/400 - loss: 0.6322 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 185/400 - loss: 1.1027 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 190/400 - loss: 1.2734 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 195/400 - loss: 0.8575 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 200/400 - loss: 0.5328 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 205/400 - loss: 0.8728 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 210/400 - loss: 1.2223 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 215/400 - loss: 0.7239 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 220/400 - loss: 1.2348 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 225/400 - loss: 1.1772 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 230/400 - loss: 1.2051 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 235/400 - loss: 0.5305 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 240/400 - loss: 0.5223 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 245/400 - loss: 1.1757 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 250/400 - loss: 0.9173 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 255/400 - loss: 0.9188 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 260/400 - loss: 0.6386 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 265/400 - loss: 1.2485 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 270/400 - loss: 0.4052 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 275/400 - loss: 1.1347 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 280/400 - loss: 0.6382 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 285/400 - loss: 0.5175 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 290/400 - loss: 1.2652 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 295/400 - loss: 0.5218 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 300/400 - loss: 0.9538 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 305/400 - loss: 1.0515 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 310/400 - loss: 0.7276 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 315/400 - loss: 0.8190 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 320/400 - loss: 0.3573 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 325/400 - loss: 1.2840 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 330/400 - loss: 0.5520 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 335/400 - loss: 0.6518 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 340/400 - loss: 1.1792 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 345/400 - loss: 0.6494 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 350/400 - loss: 1.2737 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 355/400 - loss: 0.5309 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 360/400 - loss: 1.1929 - GPU: 22.37GB/23.07GB
+  Epoch 3/5 - Batch 365/400 - loss: 0.9336 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 370/400 - loss: 0.9044 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 375/400 - loss: 0.6129 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 380/400 - loss: 1.2939 - GPU: 22.37GB/23.04GB
+  Epoch 3/5 - Batch 385/400 - loss: 0.7626 - GPU: 29.59GB/29.80GB
+  Epoch 3/5 - Batch 390/400 - loss: 0.7304 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 395/400 - loss: 0.5607 - GPU: 29.59GB/30.67GB
+  Epoch 3/5 - Batch 400/400 - loss: 1.3399 - GPU: 22.37GB/23.07GB
+Epoch 3/5 - train_loss: 0.8995 | val_loss: 0.8433
+  Epoch 4/5 - Batch 5/400 - loss: 0.6822 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 10/400 - loss: 1.0388 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 15/400 - loss: 0.9396 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 20/400 - loss: 1.0786 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 25/400 - loss: 1.2262 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 30/400 - loss: 0.4474 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 35/400 - loss: 0.5312 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 40/400 - loss: 1.2350 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 45/400 - loss: 0.8601 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 50/400 - loss: 0.5860 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 55/400 - loss: 0.9931 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 60/400 - loss: 0.4345 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 65/400 - loss: 1.0323 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 70/400 - loss: 1.0145 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 75/400 - loss: 0.6408 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 80/400 - loss: 0.7698 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 85/400 - loss: 1.1621 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 90/400 - loss: 0.8102 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 95/400 - loss: 0.6853 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 100/400 - loss: 1.1685 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 105/400 - loss: 0.9231 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 110/400 - loss: 1.1278 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 115/400 - loss: 1.1579 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 120/400 - loss: 0.5124 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 125/400 - loss: 1.1385 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 130/400 - loss: 1.0354 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 135/400 - loss: 0.6547 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 140/400 - loss: 1.3001 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 145/400 - loss: 1.1786 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 150/400 - loss: 1.0768 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 155/400 - loss: 0.6078 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 160/400 - loss: 0.7001 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 165/400 - loss: 1.2200 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 170/400 - loss: 0.6381 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 175/400 - loss: 1.0970 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 180/400 - loss: 0.9419 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 185/400 - loss: 0.4366 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 190/400 - loss: 0.7704 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 195/400 - loss: 1.1745 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 200/400 - loss: 1.0704 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 205/400 - loss: 0.6599 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 210/400 - loss: 1.1128 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 215/400 - loss: 0.9277 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 220/400 - loss: 1.0839 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 225/400 - loss: 0.8849 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 230/400 - loss: 1.1919 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 235/400 - loss: 1.2337 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 240/400 - loss: 0.7928 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 245/400 - loss: 0.9105 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 250/400 - loss: 0.6602 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 255/400 - loss: 0.9325 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 260/400 - loss: 1.1849 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 265/400 - loss: 0.5707 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 270/400 - loss: 1.1098 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 275/400 - loss: 1.2046 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 280/400 - loss: 1.1997 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 285/400 - loss: 0.5453 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 290/400 - loss: 1.3150 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 295/400 - loss: 0.7412 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 300/400 - loss: 0.7675 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 305/400 - loss: 0.8647 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 310/400 - loss: 1.1881 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 315/400 - loss: 0.9802 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 320/400 - loss: 0.7836 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 325/400 - loss: 1.0098 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 330/400 - loss: 0.5534 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 335/400 - loss: 0.4942 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 340/400 - loss: 1.0396 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 345/400 - loss: 0.6881 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 350/400 - loss: 1.0679 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 355/400 - loss: 0.5164 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 360/400 - loss: 0.5014 - GPU: 22.37GB/23.07GB
+  Epoch 4/5 - Batch 365/400 - loss: 0.3947 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 370/400 - loss: 0.7468 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 375/400 - loss: 1.2282 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 380/400 - loss: 1.1872 - GPU: 22.37GB/23.04GB
+  Epoch 4/5 - Batch 385/400 - loss: 0.8541 - GPU: 29.59GB/29.80GB
+  Epoch 4/5 - Batch 390/400 - loss: 1.1604 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 395/400 - loss: 1.0251 - GPU: 29.59GB/30.67GB
+  Epoch 4/5 - Batch 400/400 - loss: 0.5292 - GPU: 22.37GB/23.07GB
+Epoch 4/5 - train_loss: 0.8852 | val_loss: 0.8470
+  Epoch 5/5 - Batch 5/400 - loss: 0.8551 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 10/400 - loss: 0.9141 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 15/400 - loss: 1.2134 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 20/400 - loss: 1.1572 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 25/400 - loss: 0.8987 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 30/400 - loss: 0.6752 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 35/400 - loss: 1.1653 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 40/400 - loss: 0.3383 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 45/400 - loss: 1.0564 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 50/400 - loss: 0.9282 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 55/400 - loss: 0.6478 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 60/400 - loss: 1.2126 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 65/400 - loss: 1.2167 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 70/400 - loss: 0.6918 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 75/400 - loss: 1.1200 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 80/400 - loss: 1.0487 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 85/400 - loss: 0.6423 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 90/400 - loss: 1.1759 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 95/400 - loss: 0.9000 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 100/400 - loss: 0.6509 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 105/400 - loss: 0.5310 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 110/400 - loss: 0.6922 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 115/400 - loss: 0.8164 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 120/400 - loss: 1.1558 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 125/400 - loss: 1.1474 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 130/400 - loss: 1.1684 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 135/400 - loss: 0.6070 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 140/400 - loss: 0.9010 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 145/400 - loss: 0.5323 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 150/400 - loss: 0.5297 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 155/400 - loss: 0.5430 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 160/400 - loss: 1.3681 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 165/400 - loss: 1.3098 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 170/400 - loss: 1.2019 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 175/400 - loss: 1.0947 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 180/400 - loss: 0.8279 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 185/400 - loss: 1.0849 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 190/400 - loss: 0.6403 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 195/400 - loss: 1.2806 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 200/400 - loss: 1.1441 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 205/400 - loss: 0.8911 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 210/400 - loss: 1.0766 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 215/400 - loss: 0.7111 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 220/400 - loss: 1.1995 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 225/400 - loss: 1.2134 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 230/400 - loss: 1.1820 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 235/400 - loss: 1.0158 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 240/400 - loss: 1.0733 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 245/400 - loss: 0.7163 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 250/400 - loss: 1.2851 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 255/400 - loss: 0.7066 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 260/400 - loss: 1.0692 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 265/400 - loss: 1.2961 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 270/400 - loss: 1.2423 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 275/400 - loss: 0.6689 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 280/400 - loss: 1.1905 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 285/400 - loss: 0.4002 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 290/400 - loss: 0.9797 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 295/400 - loss: 0.4349 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 300/400 - loss: 0.6512 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 305/400 - loss: 0.8480 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 310/400 - loss: 1.1478 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 315/400 - loss: 1.1245 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 320/400 - loss: 0.5690 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 325/400 - loss: 0.5606 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 330/400 - loss: 1.1289 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 335/400 - loss: 0.9640 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 340/400 - loss: 1.1298 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 345/400 - loss: 0.7470 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 350/400 - loss: 0.8850 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 355/400 - loss: 0.8155 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 360/400 - loss: 0.9522 - GPU: 22.37GB/23.07GB
+  Epoch 5/5 - Batch 365/400 - loss: 0.9405 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 370/400 - loss: 0.8189 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 375/400 - loss: 1.2064 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 380/400 - loss: 1.1353 - GPU: 22.37GB/23.04GB
+  Epoch 5/5 - Batch 385/400 - loss: 1.1210 - GPU: 29.59GB/29.80GB
+  Epoch 5/5 - Batch 390/400 - loss: 0.6534 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 395/400 - loss: 0.5485 - GPU: 29.59GB/30.67GB
+  Epoch 5/5 - Batch 400/400 - loss: 0.9680 - GPU: 22.37GB/23.07GB
+Epoch 5/5 - train_loss: 0.8871 | val_loss: 0.8096
+  → Best model saved (val_loss=0.8096)
+Saved metrics to: results/metrics/full_finetune_resources.csv
+
+[5/5] Done. Best model saved to models/full_finetune/
+✓ Metrics saved to results/metrics/full_finetune.json
+
+============================================================
+RESULTS: full_finetune
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 3875544576
+  trainable_percentage: 100.0
+  peak_vram_gb: 30.15
+  energy_kwh: 0.005962
+  carbon_gco2eq: 5.96
+  training_time_hours: 0.29
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.8096
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ Full fine-tuning complete
+Done: mar. 17 mars 2026 23:01:39 CET

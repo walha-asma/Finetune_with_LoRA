@@ -1,0 +1,200 @@
+{
+  "original_baseline": {
+    "1 word": {
+      "exact": 0.3333,
+      "word_acc": 0.3333,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.2667,
+      "word_acc": 0.4667,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0,
+      "word_acc": 0.4201,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.16,
+      "word_acc": 0.4132,
+      "n": 50
+    }
+  },
+  "full_finetune": {
+    "1 word": {
+      "exact": 0.4167,
+      "word_acc": 0.4167,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.2,
+      "word_acc": 0.3667,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0,
+      "word_acc": 0.4091,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.16,
+      "word_acc": 0.3982,
+      "n": 50
+    }
+  },
+  "lora_flux2klein_rank8": {
+    "1 word": {
+      "exact": 0.4167,
+      "word_acc": 0.4167,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.3333,
+      "word_acc": 0.3667,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.087,
+      "word_acc": 0.4189,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.24,
+      "word_acc": 0.4027,
+      "n": 50
+    }
+  },
+  "lora_flux2klein_rank16": {
+    "1 word": {
+      "exact": 0.3333,
+      "word_acc": 0.3333,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.4,
+      "word_acc": 0.5,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0435,
+      "word_acc": 0.4459,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.22,
+      "word_acc": 0.4351,
+      "n": 50
+    }
+  },
+  "lora_flux2klein_rank32": {
+    "1 word": {
+      "exact": 0.4167,
+      "word_acc": 0.4167,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.2667,
+      "word_acc": 0.4333,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0435,
+      "word_acc": 0.3927,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.2,
+      "word_acc": 0.4106,
+      "n": 50
+    }
+  },
+  "lora_flux2klein_rank64": {
+    "1 word": {
+      "exact": 0.3333,
+      "word_acc": 0.3333,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.2667,
+      "word_acc": 0.4667,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0435,
+      "word_acc": 0.3479,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.18,
+      "word_acc": 0.38,
+      "n": 50
+    }
+  },
+  "lora_cross_attention_rank16": {
+    "1 word": {
+      "exact": 0.3333,
+      "word_acc": 0.3333,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.3333,
+      "word_acc": 0.4333,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0435,
+      "word_acc": 0.4389,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.2,
+      "word_acc": 0.4119,
+      "n": 50
+    }
+  },
+  "lora_cross_attention_rank32": {
+    "1 word": {
+      "exact": 0.4167,
+      "word_acc": 0.4167,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.3333,
+      "word_acc": 0.5,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0,
+      "word_acc": 0.4404,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.2,
+      "word_acc": 0.4526,
+      "n": 50
+    }
+  },
+  "qlora_cross_attention_rank16": {
+    "1 word": {
+      "exact": 0.3333,
+      "word_acc": 0.3333,
+      "n": 12
+    },
+    "2 words": {
+      "exact": 0.2667,
+      "word_acc": 0.3667,
+      "n": 15
+    },
+    "3+ words": {
+      "exact": 0.0435,
+      "word_acc": 0.3468,
+      "n": 23
+    },
+    "all": {
+      "exact": 0.18,
+      "word_acc": 0.3495,
+      "n": 50
+    }
+  }
+}

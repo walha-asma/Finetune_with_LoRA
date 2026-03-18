@@ -1,0 +1,50 @@
+{
+  "experiment": "lora_flux2klein_rank64",
+  "training": {
+    "trainable_params": 7864320,
+    "trainable_percentage": 0.2,
+    "peak_vram_gb": 19.23,
+    "energy_kwh": 0.006604,
+    "carbon_gco2eq": 6.6,
+    "training_time_hours": 0.3,
+    "adapter_size_mb": 30.01
+  },
+  "validation": {
+    "val_loss": 0.753
+  },
+  "test": {
+    "fid": 159.17,
+    "clip_score": 15.9346,
+    "ocr_exact_match": 0.18,
+    "ocr_word_accuracy": 0.38,
+    "ocr_cer": 0.6885
+  },
+  "inference": {
+    "avg_latency_s": 3.031,
+    "std_latency_s": 0.019,
+    "min_latency_s": 2.987,
+    "max_latency_s": 3.054,
+    "throughput_img_per_s": 0.33
+  },
+  "config": {
+    "experiment": "lora_flux2klein_rank64",
+    "model_path": "models/flux2-klein-base-4b",
+    "rank": 64,
+    "lora_alpha": 128,
+    "epochs": 10,
+    "learning_rate": 0.0001,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "weight_decay": 0.01,
+    "lora_dropout": 0.1,
+    "target_modules": [
+      "to_q",
+      "to_k",
+      "to_v",
+      "to_out.0",
+      "ff.net.0.proj",
+      "ff.net.2"
+    ],
+    "seed": 42
+  }
+}

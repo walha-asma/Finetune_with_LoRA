@@ -1,0 +1,154 @@
+{
+  "rank_8": {
+    "experiment": "lora_flux2klein_rank8",
+    "training": {
+      "trainable_params": 983040,
+      "trainable_percentage": 0.03,
+      "peak_vram_gb": 19.11,
+      "energy_kwh": 0.006586,
+      "carbon_gco2eq": 6.59,
+      "training_time_hours": 0.3,
+      "adapter_size_mb": null
+    },
+    "validation": {
+      "val_loss": 0.7553
+    },
+    "test": {},
+    "inference": {},
+    "config": {
+      "experiment": "lora_flux2klein_rank8",
+      "model_path": "models/flux2-klein-base-4b",
+      "rank": 8,
+      "lora_alpha": 16,
+      "epochs": 10,
+      "learning_rate": 0.0001,
+      "batch_size": 1,
+      "gradient_accumulation_steps": 4,
+      "weight_decay": 0.01,
+      "lora_dropout": 0.1,
+      "target_modules": [
+        "to_q",
+        "to_k",
+        "to_v",
+        "to_out.0",
+        "ff.net.0.proj",
+        "ff.net.2"
+      ],
+      "seed": 42
+    }
+  },
+  "rank_16": {
+    "experiment": "lora_flux2klein_rank16",
+    "training": {
+      "trainable_params": 1966080,
+      "trainable_percentage": 0.05,
+      "peak_vram_gb": 19.13,
+      "energy_kwh": 0.006574,
+      "carbon_gco2eq": 6.57,
+      "training_time_hours": 0.3,
+      "adapter_size_mb": null
+    },
+    "validation": {
+      "val_loss": 0.7546
+    },
+    "test": {},
+    "inference": {},
+    "config": {
+      "experiment": "lora_flux2klein_rank16",
+      "model_path": "models/flux2-klein-base-4b",
+      "rank": 16,
+      "lora_alpha": 32,
+      "epochs": 10,
+      "learning_rate": 0.0001,
+      "batch_size": 1,
+      "gradient_accumulation_steps": 4,
+      "weight_decay": 0.01,
+      "lora_dropout": 0.1,
+      "target_modules": [
+        "to_q",
+        "to_k",
+        "to_v",
+        "to_out.0",
+        "ff.net.0.proj",
+        "ff.net.2"
+      ],
+      "seed": 42
+    }
+  },
+  "rank_32": {
+    "experiment": "lora_flux2klein_rank32",
+    "training": {
+      "trainable_params": 3932160,
+      "trainable_percentage": 0.1,
+      "peak_vram_gb": 19.16,
+      "energy_kwh": 0.006588,
+      "carbon_gco2eq": 6.59,
+      "training_time_hours": 0.3,
+      "adapter_size_mb": null
+    },
+    "validation": {
+      "val_loss": 0.7528
+    },
+    "test": {},
+    "inference": {},
+    "config": {
+      "experiment": "lora_flux2klein_rank32",
+      "model_path": "models/flux2-klein-base-4b",
+      "rank": 32,
+      "lora_alpha": 64,
+      "epochs": 10,
+      "learning_rate": 0.0001,
+      "batch_size": 1,
+      "gradient_accumulation_steps": 4,
+      "weight_decay": 0.01,
+      "lora_dropout": 0.1,
+      "target_modules": [
+        "to_q",
+        "to_k",
+        "to_v",
+        "to_out.0",
+        "ff.net.0.proj",
+        "ff.net.2"
+      ],
+      "seed": 42
+    }
+  },
+  "rank_64": {
+    "experiment": "lora_flux2klein_rank64",
+    "training": {
+      "trainable_params": 7864320,
+      "trainable_percentage": 0.2,
+      "peak_vram_gb": 19.23,
+      "energy_kwh": 0.006604,
+      "carbon_gco2eq": 6.6,
+      "training_time_hours": 0.3,
+      "adapter_size_mb": null
+    },
+    "validation": {
+      "val_loss": 0.753
+    },
+    "test": {},
+    "inference": {},
+    "config": {
+      "experiment": "lora_flux2klein_rank64",
+      "model_path": "models/flux2-klein-base-4b",
+      "rank": 64,
+      "lora_alpha": 128,
+      "epochs": 10,
+      "learning_rate": 0.0001,
+      "batch_size": 1,
+      "gradient_accumulation_steps": 4,
+      "weight_decay": 0.01,
+      "lora_dropout": 0.1,
+      "target_modules": [
+        "to_q",
+        "to_k",
+        "to_v",
+        "to_out.0",
+        "ff.net.0.proj",
+        "ff.net.2"
+      ],
+      "seed": 42
+    }
+  }
+}

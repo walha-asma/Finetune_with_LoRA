@@ -1,0 +1,61 @@
+Job ID : 14843
+Node   : ensta-l40s02
+GPU    : NVIDIA L40S
+Date   : mer. 18 mars 2026 03:30:54 CET
+Loaded 50 test samples from data/test.json
+
+Word-count distribution in test set:
+  1 word    : 12 samples
+  2 words   : 15 samples
+  3 words   : 8 samples
+  4 words   : 5 samples
+  5 words   : 8 samples
+  6 words   : 1 samples
+  7 words   : 1 samples
+
+Found generated images for: ['original_baseline', 'full_finetune', 'lora_flux2klein_rank8', 'lora_flux2klein_rank16', 'lora_flux2klein_rank32', 'lora_flux2klein_rank64', 'lora_cross_attention_rank16', 'lora_cross_attention_rank32', 'qlora_cross_attention_rank16']
+
+Processing original_baseline...
+Processing full_finetune...
+Processing lora_flux2klein_rank8...
+Processing lora_flux2klein_rank16...
+Processing lora_flux2klein_rank32...
+Processing lora_flux2klein_rank64...
+Processing lora_cross_attention_rank16...
+Processing lora_cross_attention_rank32...
+Processing qlora_cross_attention_rank16...
+
+====================================================================================================
+OCR EXACT MATCH BY TEXT LENGTH
+====================================================================================================
+Experiment                                          1 word             2 words            3+ words                 all
+----------------------------------------------------------------------------------------------------
+original_baseline                              0.33 (n=12)         0.27 (n=15)         0.00 (n=23)         0.16 (n=50)
+full_finetune                                  0.42 (n=12)         0.20 (n=15)         0.00 (n=23)         0.16 (n=50)
+lora_flux2klein_rank8                          0.42 (n=12)         0.33 (n=15)         0.09 (n=23)         0.24 (n=50)
+lora_flux2klein_rank16                         0.33 (n=12)         0.40 (n=15)         0.04 (n=23)         0.22 (n=50)
+lora_flux2klein_rank32                         0.42 (n=12)         0.27 (n=15)         0.04 (n=23)         0.20 (n=50)
+lora_flux2klein_rank64                         0.33 (n=12)         0.27 (n=15)         0.04 (n=23)         0.18 (n=50)
+lora_cross_attention_rank16                    0.33 (n=12)         0.33 (n=15)         0.04 (n=23)         0.20 (n=50)
+lora_cross_attention_rank32                    0.42 (n=12)         0.33 (n=15)         0.00 (n=23)         0.20 (n=50)
+qlora_cross_attention_rank16                   0.33 (n=12)         0.27 (n=15)         0.04 (n=23)         0.18 (n=50)
+
+====================================================================================================
+OCR WORD ACCURACY BY TEXT LENGTH
+====================================================================================================
+Experiment                                          1 word             2 words            3+ words                 all
+----------------------------------------------------------------------------------------------------
+original_baseline                              0.33 (n=12)         0.47 (n=15)         0.42 (n=23)         0.41 (n=50)
+full_finetune                                  0.42 (n=12)         0.37 (n=15)         0.41 (n=23)         0.40 (n=50)
+lora_flux2klein_rank8                          0.42 (n=12)         0.37 (n=15)         0.42 (n=23)         0.40 (n=50)
+lora_flux2klein_rank16                         0.33 (n=12)         0.50 (n=15)         0.45 (n=23)         0.44 (n=50)
+lora_flux2klein_rank32                         0.42 (n=12)         0.43 (n=15)         0.39 (n=23)         0.41 (n=50)
+lora_flux2klein_rank64                         0.33 (n=12)         0.47 (n=15)         0.35 (n=23)         0.38 (n=50)
+lora_cross_attention_rank16                    0.33 (n=12)         0.43 (n=15)         0.44 (n=23)         0.41 (n=50)
+lora_cross_attention_rank32                    0.42 (n=12)         0.50 (n=15)         0.44 (n=23)         0.45 (n=50)
+qlora_cross_attention_rank16                   0.33 (n=12)         0.37 (n=15)         0.35 (n=23)         0.35 (n=50)
+
+✓ Saved to results/metrics/ocr_by_length.json
+✓ Heatmap saved to results/plots/ocr_by_length_heatmap.png
+✓ Bar chart saved to results/plots/ocr_by_length.png
+Done: mer. 18 mars 2026 03:31:17 CET

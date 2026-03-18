@@ -1,0 +1,46 @@
+{
+  "experiment": "lora_cross_attention_rank32",
+  "training": {
+    "trainable_params": 1966080,
+    "trainable_percentage": 0.05,
+    "peak_vram_gb": 19.04,
+    "energy_kwh": 0.009811,
+    "carbon_gco2eq": 9.81,
+    "training_time_hours": 0.45,
+    "adapter_size_mb": 7.5
+  },
+  "validation": {
+    "val_loss": 0.8093
+  },
+  "test": {
+    "fid": 152.48,
+    "clip_score": 15.9234,
+    "ocr_exact_match": 0.2,
+    "ocr_word_accuracy": 0.4526,
+    "ocr_cer": 0.7282
+  },
+  "inference": {
+    "avg_latency_s": 2.976,
+    "std_latency_s": 0.022,
+    "min_latency_s": 2.924,
+    "max_latency_s": 3.006,
+    "throughput_img_per_s": 0.336
+  },
+  "config": {
+    "experiment": "lora_cross_attention_rank32",
+    "model_path": "models/flux2-klein-base-4b",
+    "rank": 32,
+    "lora_alpha": 64,
+    "epochs": 15,
+    "learning_rate": 0.0001,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "weight_decay": 0.01,
+    "lora_dropout": 0.1,
+    "target_modules": [
+      "to_k",
+      "to_v"
+    ],
+    "seed": 42
+  }
+}
