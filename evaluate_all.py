@@ -4,7 +4,7 @@ from pathlib import Path
 from diffusers import Flux2KleinPipeline
 from peft import PeftModel
 from dataset_loader import get_test_dataloader
-from evaluation import evaluate_on_test_set, generate_images_for_fid_reference
+from evaluation import evaluate_on_test_set
 from metrics_utils import MetricsTracker
 
 MODEL_BASE = "models/flux2-klein-base-4b"
