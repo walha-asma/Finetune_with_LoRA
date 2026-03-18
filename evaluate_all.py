@@ -198,11 +198,11 @@ def evaluate_all():
         torch.cuda.empty_cache()
 
     # Final comparison table
-    print("\n" + "="*100)
+    print("\n" + "="*110)
     print("FINAL COMPARISON")
-    print("="*100)
-    print(f"{'Experiment':<38} {'FID':>8} {'CLIP':>8} {'OCR-Exact':>10} {'OCR-Word':>10} {'Size(MB)':>10}")
-    print("-"*100)
+    print("="*110)
+    print(f"{'Experiment':<38} {'FID':>8} {'CLIP':>8} {'OCR-Exact':>10} {'OCR-Word':>10} {'OCR-CER':>9} {'Size(MB)':>10}")
+    print("-"*110)
     for exp in EXPERIMENTS:
         exp_name = exp["name"]
         test = results_summary.get(exp_name, {})
@@ -216,7 +216,8 @@ def evaluate_all():
         clip = test.get("clip_score", "N/A")
         em   = test.get("ocr_exact_match", "N/A")
         wa   = test.get("ocr_word_accuracy", "N/A")
-        print(f"{exp_name:<38} {str(fid):>8} {str(clip):>8} {str(em):>10} {str(wa):>10} {str(size):>10}")
+        cer  = test.get("ocr_cer", "N/A")
+        print(f"{exp_name:<38} {str(fid):>8} {str(clip):>8} {str(em):>10} {str(wa):>10} {str(cer):>9} {str(size):>10}")
 
     with open("results/metrics/final_comparison.json", "w") as f:
         json.dump(results_summary, f, indent=2)

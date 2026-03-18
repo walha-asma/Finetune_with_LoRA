@@ -108,7 +108,7 @@ def plot_tradeoff_scatter(all_metrics):
 
 
 def plot_radar(all_metrics):
-    axes_labels = ["FID\n(inv)", "CLIP\nscore", "OCR\nword acc", "VRAM\n(inv)"]
+    axes_labels = ["FID\n(inv)", "CLIP\nscore", "OCR\nword acc", "CER\n(inv)", "VRAM\n(inv)"]
     N = len(axes_labels)
     angles = [n / float(N) * 2 * math.pi for n in range(N)]
     angles += angles[:1]   # close the polygon
@@ -121,6 +121,7 @@ def plot_radar(all_metrics):
         raw[name]["fid"]  = safe(m, "test", "fid")
         raw[name]["clip"] = safe(m, "test", "clip_score")
         raw[name]["ocr"]  = safe(m, "test", "ocr_word_accuracy")
+        raw[name]["cer"]  = safe(m, "test", "ocr_cer")
         raw[name]["vram"] = safe(m, "training", "peak_vram_gb")
 
     # Min/max per axis for normalisation
@@ -132,6 +133,7 @@ def plot_radar(all_metrics):
     fid_min,  fid_max  = minmax("fid")
     clip_min, clip_max = minmax("clip")
     ocr_min,  ocr_max  = minmax("ocr")
+    cer_min,  cer_max  = minmax("cer")
     vram_min, vram_max = minmax("vram")
 
     def norm(val, lo, hi, invert=False):
@@ -146,10 +148,11 @@ def plot_radar(all_metrics):
         r = raw[name]
         # All axes: higher = better on radar
         values = [
-            norm(r["fid"],  fid_min,  fid_max,  invert=True),   # lower FID = better
+            norm(r["fid"],  fid_min,  fid_max,  invert=True),
             norm(r["clip"], clip_min, clip_max,  invert=False),
             norm(r["ocr"],  ocr_min,  ocr_max,   invert=False),
-            norm(r["vram"], vram_min, vram_max,  invert=True),   # lower VRAM = better
+            norm(r["cer"],  cer_min,  cer_max,   invert=True),   # lower CER = better
+            norm(r["vram"], vram_min, vram_max,  invert=True),
         ]
         # Skip if all zeros (missing data)
         if all(v == 0.0 for v in values):
@@ -247,96 +250,64 @@ def plot_loss_curves(all_metrics):
     print(f"  ✓ {out}")
 
 
-def plot_trainable_params_vs_rank(all_metrics):
+def plot_ocr_comparison(all_metrics):
     """
-    Bar chart: trainable parameter count vs rank for each experiment group.
-    Three groups side by side: LoRA full, CA-LoRA, QLoRA.
-    Annotates each bar with the trainable % of total params.
+    Grouped horizontal bar chart showing all three OCR metrics
+    (exact match, word accuracy, CER) side by side per experiment.
+    Makes it easy to see which models actually render text correctly
+    after the normalization fixes.
     """
-
-    # Group order and metadata
-    groups = [
-        {
-            "label": "LoRA (full)",
-            "experiments": [
-                "lora_flux2klein_rank8",
-                "lora_flux2klein_rank16",
-                "lora_flux2klein_rank32",
-                "lora_flux2klein_rank64",
-            ],
-            "rank_key": lambda name: int(name.split("rank")[-1]),
-            "color_base": "#3B8BD4",
-            "colors": ["#85B7EB", "#3B8BD4", "#2A6FBB", "#0F3D80"],
-        },
-        {
-            "label": "CA-LoRA",
-            "experiments": [
-                "lora_cross_attention_rank16",
-                "lora_cross_attention_rank32",
-            ],
-            "rank_key": lambda name: int(name.split("rank")[-1]),
-            "color_base": "#1D9E75",
-            "colors": ["#5DCAA5", "#0F6E56"],
-        },
-        {
-            "label": "QLoRA",
-            "experiments": [
-                "qlora_cross_attention_rank16",
-            ],
-            "rank_key": lambda name: int(name.split("rank")[-1]),
-            "color_base": "#BA7517",
-            "colors": ["#BA7517"],
-        },
+    # Preserve experiment order
+    order = [
+        "original_baseline", "full_finetune",
+        "lora_flux2klein_rank8", "lora_flux2klein_rank16",
+        "lora_flux2klein_rank32", "lora_flux2klein_rank64",
+        "lora_cross_attention_rank16", "lora_cross_attention_rank32",
+        "qlora_cross_attention_rank16",
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(14, 6),
-                             gridspec_kw={"width_ratios": [4, 2, 1]})
-    fig.suptitle("Trainable Parameters vs Rank", fontsize=14, fontweight="bold", y=1.01)
-
-    for ax, group in zip(axes, groups):
-        ranks, params, pcts, colors = [], [], [], []
-
-        for exp_name, color in zip(group["experiments"], group["colors"]):
-            m = all_metrics.get(exp_name)
-            if m is None:
-                continue
-            n_params = safe(m, "training", "trainable_params")
-            pct      = safe(m, "training", "trainable_percentage")
-            rank     = group["rank_key"](exp_name)
-            if n_params is None:
-                continue
-            ranks.append(f"r={rank}")
-            params.append(n_params / 1e6)   # millions
-            pcts.append(pct if pct is not None else 0.0)
-            colors.append(color)
-
-        if not ranks:
-            ax.set_visible(False)
+    names, exact, word_acc, cer = [], [], [], []
+    for name in order:
+        m = all_metrics.get(name)
+        if m is None:
             continue
+        em  = safe(m, "test", "ocr_exact_match")
+        wa  = safe(m, "test", "ocr_word_accuracy")
+        c   = safe(m, "test", "ocr_cer")
+        if not isinstance(em, float): em = 0.0
+        if not isinstance(wa, float): wa = 0.0
+        if not isinstance(c,  float): c  = 1.0
+        names.append(LABELS.get(name, name))
+        exact.append(em)
+        word_acc.append(wa)
+        cer.append(c)
 
-        x = range(len(ranks))
-        bars = ax.bar(x, params, color=colors, edgecolor="white",
-                      linewidth=0.8, width=0.55)
+    if not names:
+        print("  [SKIP] No OCR data found.")
+        return
 
-        # Annotate each bar: M params + %
-        for bar, pct in zip(bars, pcts):
-            h = bar.get_height()
-            ax.text(bar.get_x() + bar.get_width() / 2,
-                    h + max(params) * 0.02,
-                    f"{h:.1f}M\n({pct:.2f}%)",
-                    ha="center", va="bottom", fontsize=9, color="#333333")
+    y = np.arange(len(names))
+    h = 0.25
 
-        ax.set_xticks(list(x))
-        ax.set_xticklabels(ranks, fontsize=10)
-        ax.set_title(group["label"], fontsize=12, fontweight="bold", pad=8)
-        ax.set_ylabel("Trainable params (M)" if ax == axes[0] else "", fontsize=10)
-        ax.set_ylim(0, max(params) * 1.35)
-        ax.grid(axis="y", linestyle="--", alpha=0.4)
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
+    fig, ax = plt.subplots(figsize=(11, max(5, len(names) * 0.7)))
+    ax.barh(y + h,   exact,    height=h, label="Exact match ↑",   color="#3B8BD4", edgecolor="white")
+    ax.barh(y,       word_acc, height=h, label="Word accuracy ↑", color="#1D9E75", edgecolor="white")
+    ax.barh(y - h,   cer,      height=h, label="CER ↓",           color="#E05C2A", edgecolor="white", alpha=0.85)
+
+    ax.set_yticks(y)
+    ax.set_yticklabels(names, fontsize=10)
+    ax.set_xlabel("Score", fontsize=11)
+    ax.set_xlim(0, 1.0)
+    ax.set_title("OCR metrics per experiment (normalized comparison)",
+                 fontsize=13, fontweight="bold")
+    ax.axvline(0.5, color="gray", linestyle="--", linewidth=0.8, alpha=0.5)
+    ax.legend(fontsize=10, loc="lower right")
+    ax.grid(axis="x", linestyle="--", alpha=0.35)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
 
     plt.tight_layout()
-    out = PLOTS_DIR / "trainable_params_vs_rank.png"
+    out = PLOTS_DIR / "ocr_comparison.png"
     plt.savefig(out, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"  ✓ {out}")
@@ -362,7 +333,7 @@ def main():
     plot_radar(all_metrics)
     plot_adapter_sizes(all_metrics)
     plot_loss_curves(all_metrics)
-    plot_trainable_params_vs_rank(all_metrics)
+    plot_ocr_comparison(all_metrics)
 
     print(f"\n All plots saved to {PLOTS_DIR.absolute()}/")
     print("=" * 60)

@@ -127,20 +127,56 @@ class MetricsTracker:
 
     # === OCR Accuracy ===
 
+    @staticmethod
+    def _normalize_ocr(text):
+        """
+        Normalize text for OCR comparison:
+        - lowercase
+        - remove punctuation except alphanumeric and spaces
+          (handles dots in "R.A.SALVATORE" → "rasalvatore",
+           hyphens, apostrophes, etc.)
+        This avoids mismatches caused purely by punctuation differences
+        between the ground-truth label and the OCR reader output.
+        """
+        import re
+        text = text.lower()
+        text = re.sub(r"[^a-z0-9\s]", "", text)
+        text = re.sub(r"\s+", " ", text).strip()
+        return text
+
     def compute_ocr_accuracy(self, images, expected_texts):
         """
-        Computes two OCR metrics using EasyOCR:
+        Computes three OCR metrics using EasyOCR:
 
-        1. ocr_exact_match  (strict)  : fraction of images where the FULL
-           expected text appears as a substring in the OCR output.
+        1. ocr_exact_match (strict, normalized):
+           The full normalized expected string appears as a substring
+           in the normalized OCR output. Punctuation and case are
+           ignored so "R.A.SALVATORE" matches "ra salvatore".
 
-        2. ocr_word_accuracy (lenient): average fraction of expected words
-           found in the OCR output per image. Gives partial credit and is
-           more informative on small datasets.
+        2. ocr_word_accuracy (lenient, normalized):
+           Average fraction of normalized expected words found in the
+           normalized OCR output. Gives partial credit and is more
+           informative on small datasets.
 
-        Returns a dict with both metrics, or -1.0 if EasyOCR unavailable.
+        3. ocr_cer (Character Error Rate):
+           Edit-distance-based character-level accuracy between the
+           normalized expected string and the normalized OCR output
+           (concatenated over all detections). Lower is better.
+           Computed via python-Levenshtein if available, otherwise
+           a pure-Python fallback is used.
+
+        All three metrics operate on the same normalized strings so
+        punctuation artifacts in the ground-truth labels (e.g. dataset
+        OCR errors like "Bvgitte FE") do not artificially inflate or
+        deflate scores.
+
+        Returns a dict with all three metrics, or -1.0 if EasyOCR unavailable.
         """
-        empty = {"ocr_exact_match": -1.0, "ocr_word_accuracy": -1.0}
+        empty = {
+            "ocr_exact_match": -1.0,
+            "ocr_word_accuracy": -1.0,
+            "ocr_cer": -1.0,
+        }
 
         try:
             import easyocr
@@ -148,11 +184,29 @@ class MetricsTracker:
             print("  [WARNING] easyocr not installed. Run: pip install easyocr --break-system-packages")
             return empty
 
+        # Optional fast edit-distance via python-Levenshtein; fallback to stdlib
+        try:
+            from Levenshtein import distance as lev_distance
+        except ImportError:
+            def lev_distance(s1, s2):
+                # Pure-Python Wagner-Fischer
+                m, n = len(s1), len(s2)
+                dp = list(range(n + 1))
+                for i in range(1, m + 1):
+                    prev, dp[0] = dp[0], i
+                    for j in range(1, n + 1):
+                        prev, dp[j] = dp[j], (
+                            prev if s1[i-1] == s2[j-1]
+                            else 1 + min(prev, dp[j], dp[j-1])
+                        )
+                return dp[n]
+
         try:
             reader = easyocr.Reader(['en'], gpu=torch.cuda.is_available(), verbose=False)
 
             exact_correct = 0
             word_scores = []
+            cer_scores = []
             total = 0
 
             for image, expected in zip(images, expected_texts):
@@ -162,26 +216,40 @@ class MetricsTracker:
 
                 img_np = np.array(image)
                 results = reader.readtext(img_np, detail=0)
-                ocr_output = " ".join(results).lower()
-                expected_lower = expected.lower()
+                raw_ocr = " ".join(results)
 
-                # Metric 1: full string substring match
-                if expected_lower in ocr_output:
+                ocr_norm  = self._normalize_ocr(raw_ocr)
+                exp_norm  = self._normalize_ocr(expected)
+
+                # Metric 1: normalized exact match (substring)
+                if exp_norm in ocr_norm:
                     exact_correct += 1
 
-                # Metric 2: word-level match
-                words = expected_lower.split()
+                # Metric 2: normalized word-level accuracy
+                words = exp_norm.split()
                 if words:
-                    matched = sum(1 for w in words if w in ocr_output)
+                    matched = sum(1 for w in words if w in ocr_norm)
                     word_scores.append(matched / len(words))
 
-            exact_match = round(exact_correct / total, 4) if total > 0 else 0.0
+                # Metric 3: CER — edit distance / len(expected)
+                if exp_norm:
+                    cer = lev_distance(exp_norm, ocr_norm) / max(len(exp_norm), 1)
+                    # Cap at 1.0 (OCR completely wrong is not worse than 100% error)
+                    cer_scores.append(min(cer, 1.0))
+
+            exact_match   = round(exact_correct / total, 4) if total > 0 else 0.0
             word_accuracy = round(float(np.mean(word_scores)), 4) if word_scores else 0.0
+            cer           = round(float(np.mean(cer_scores)), 4) if cer_scores else 1.0
 
-            print(f"    OCR exact match:   {exact_match:.4f}")
-            print(f"    OCR word accuracy: {word_accuracy:.4f}")
+            print(f"    OCR exact match:   {exact_match:.4f}  (normalized)")
+            print(f"    OCR word accuracy: {word_accuracy:.4f}  (normalized)")
+            print(f"    OCR CER:           {cer:.4f}  (lower is better)")
 
-            return {"ocr_exact_match": exact_match, "ocr_word_accuracy": word_accuracy}
+            return {
+                "ocr_exact_match": exact_match,
+                "ocr_word_accuracy": word_accuracy,
+                "ocr_cer": cer,
+            }
 
         except Exception as e:
             print(f"  [WARNING] OCR failed: {e}")
@@ -198,13 +266,16 @@ class MetricsTracker:
             "clip_score": round(clip_score, 4) if clip_score is not None else None,
         }
         if isinstance(ocr_results, dict):
-            em = ocr_results.get("ocr_exact_match", -1.0)
-            wa = ocr_results.get("ocr_word_accuracy", -1.0)
-            self.metrics["test"]["ocr_exact_match"] = em if em >= 0 else "skipped"
-            self.metrics["test"]["ocr_word_accuracy"] = wa if wa >= 0 else "skipped"
+            em  = ocr_results.get("ocr_exact_match", -1.0)
+            wa  = ocr_results.get("ocr_word_accuracy", -1.0)
+            cer = ocr_results.get("ocr_cer", -1.0)
+            self.metrics["test"]["ocr_exact_match"]  = em  if em  >= 0 else "skipped"
+            self.metrics["test"]["ocr_word_accuracy"] = wa  if wa  >= 0 else "skipped"
+            self.metrics["test"]["ocr_cer"]           = cer if cer >= 0 else "skipped"
         else:
-            self.metrics["test"]["ocr_exact_match"] = "skipped"
+            self.metrics["test"]["ocr_exact_match"]  = "skipped"
             self.metrics["test"]["ocr_word_accuracy"] = "skipped"
+            self.metrics["test"]["ocr_cer"]           = "skipped"
 
         if inference_stats:
             self.metrics["inference"] = inference_stats
