@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# LoRA Fine-tuning results
+results/generated_images/
+results/fid_reference/
+data/
+models/
