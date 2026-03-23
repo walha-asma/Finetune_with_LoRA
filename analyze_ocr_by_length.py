@@ -97,14 +97,16 @@ def find_generated_image(exp_name: str, sample_index: int) -> Path | None:
     """
     Generated images are saved as:
       results/generated_images/<exp>/test/<idx:02d>_<prompt_prefix>.png
-    We match by the leading two-digit index.
+    We try both 2-digit (legacy) and 3-digit (>99 samples) prefixes.
     """
     exp_dir = GENERATED_DIR / exp_name / "test"
     if not exp_dir.exists():
         return None
-    prefix = f"{sample_index:02d}_"
-    matches = sorted(exp_dir.glob(f"{prefix}*.png"))
-    return matches[0] if matches else None
+    for fmt in (f"{sample_index:02d}_", f"{sample_index:03d}_"):
+        matches = sorted(exp_dir.glob(f"{fmt}*.png"))
+        if matches:
+            return matches[0]
+    return None
 
 
 def ocr_image(reader, image_path: Path) -> str:

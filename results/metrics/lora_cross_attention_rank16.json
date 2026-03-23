@@ -4,34 +4,34 @@
     "trainable_params": 983040,
     "trainable_percentage": 0.03,
     "peak_vram_gb": 19.02,
-    "energy_kwh": 0.009774,
-    "carbon_gco2eq": 9.77,
-    "training_time_hours": 0.45,
+    "energy_kwh": 0.026096,
+    "carbon_gco2eq": 26.1,
+    "training_time_hours": 1.19,
     "adapter_size_mb": 3.75
   },
   "validation": {
-    "val_loss": 0.8117
+    "val_loss": 0.8239
   },
   "test": {
-    "fid": 161.51,
-    "clip_score": 15.6836,
-    "ocr_exact_match": 0.2,
-    "ocr_word_accuracy": 0.4119,
-    "ocr_cer": 0.6603
+    "fid": 66.01,
+    "clip_score": 15.2953,
+    "ocr_exact_match": 0.3,
+    "ocr_word_accuracy": 0.6155,
+    "ocr_cer": 0.3951
   },
   "inference": {
-    "avg_latency_s": 2.973,
-    "std_latency_s": 0.019,
-    "min_latency_s": 2.929,
-    "max_latency_s": 3.003,
-    "throughput_img_per_s": 0.336
+    "avg_latency_s": 2.987,
+    "std_latency_s": 0.031,
+    "min_latency_s": 2.909,
+    "max_latency_s": 3.033,
+    "throughput_img_per_s": 0.335
   },
   "config": {
     "experiment": "lora_cross_attention_rank16",
     "model_path": "models/flux2-klein-base-4b",
     "rank": 16,
     "lora_alpha": 32,
-    "epochs": 15,
+    "epochs": 20,
     "learning_rate": 0.0001,
     "batch_size": 1,
     "gradient_accumulation_steps": 4,
@@ -41,6 +41,7 @@
       "to_k",
       "to_v"
     ],
-    "seed": 42
+    "seed": 42,
+    "early_stopping_patience": 5
   }
 }

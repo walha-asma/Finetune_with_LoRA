@@ -1,0 +1,30 @@
+Job ID : 16936
+Node   : ensta-l40s02
+GPU    : NVIDIA L40S
+Date   : lun. 23 mars 2026 14:24:49 CET
+============================================================
+GENERATING PLOTS
+============================================================
+  Loaded metrics for 11 experiments:
+    - original_baseline
+    - ocr_by_length
+    - lora_cross_attention_rank32
+    - lora_flux2klein_rank32
+    - qlora_cross_attention_rank16
+    - lora_flux2klein_rank64
+    - lora_flux2klein_rank8
+    - lora_cross_attention_rank16
+    - lora_flux2klein_rank16
+    - lora_rank_comparison
+    - full_finetune
+
+  Generating plots...
+  ✓ results/plots/tradeoff_scatter.png
+  ✓ results/plots/radar_chart.png
+  ✓ results/plots/adapter_sizes.png
+  [SKIP] No loss_curve data found.
+  ✓ results/plots/ocr_comparison.png
+
+ All plots saved to /home/ensta/ensta-walha/text-in-image-generation/Finetune_with_LoRA/results/plots/
+============================================================
+Done: lun. 23 mars 2026 14:24:50 CET

@@ -24,7 +24,7 @@ def set_seed(seed=42):
 def full_finetune(
     model_path="models/flux2-klein-base-4b",
     output_dir="models/full_finetune",
-    epochs=5,
+    epochs=15,
     learning_rate=2e-6,
     batch_size=1,
     gradient_accumulation_steps=4,
@@ -32,6 +32,7 @@ def full_finetune(
     use_bf16=True,
     seed=42,
     gradient_checkpointing=True,
+    early_stopping_patience=4,
 ):
     set_seed(seed)
 
@@ -52,6 +53,7 @@ def full_finetune(
         "use_bf16": use_bf16,
         "seed": seed,
         "gradient_checkpointing": gradient_checkpointing,
+        "early_stopping_patience": early_stopping_patience,
         "trainable": "all_transformer",
         "frozen": "text_encoder+vae"
     }
@@ -115,6 +117,7 @@ def full_finetune(
 
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     best_val_loss = float("inf")
+    epochs_no_improve = 0
 
     tracker.start_training()
 
@@ -198,8 +201,15 @@ def full_finetune(
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
+                epochs_no_improve = 0
                 pipe.save_pretrained(output_dir)
                 print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+            else:
+                epochs_no_improve += 1
+                print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
+                if epochs_no_improve >= early_stopping_patience:
+                    print(f"  Early stopping triggered at epoch {epoch+1}")
+                    break
 
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")

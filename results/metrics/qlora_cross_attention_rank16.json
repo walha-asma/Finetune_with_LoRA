@@ -4,27 +4,27 @@
     "trainable_params": 983040,
     "trainable_percentage": 0.05,
     "peak_vram_gb": 16.56,
-    "energy_kwh": 0.013404,
-    "carbon_gco2eq": 13.4,
-    "training_time_hours": 0.62,
+    "energy_kwh": 0.023178,
+    "carbon_gco2eq": 23.18,
+    "training_time_hours": 1.06,
     "adapter_size_mb": 3.75
   },
   "validation": {
-    "val_loss": 0.8208
+    "val_loss": 0.8421
   },
   "test": {
-    "fid": 164.22,
-    "clip_score": 15.9531,
-    "ocr_exact_match": 0.18,
-    "ocr_word_accuracy": 0.3495,
-    "ocr_cer": 0.6916
+    "fid": 78.69,
+    "clip_score": 15.5054,
+    "ocr_exact_match": 0.23,
+    "ocr_word_accuracy": 0.5421,
+    "ocr_cer": 0.5314
   },
   "inference": {
-    "avg_latency_s": 4.453,
-    "std_latency_s": 0.013,
-    "min_latency_s": 4.412,
-    "max_latency_s": 4.475,
-    "throughput_img_per_s": 0.225
+    "avg_latency_s": 4.42,
+    "std_latency_s": 0.014,
+    "min_latency_s": 4.356,
+    "max_latency_s": 4.439,
+    "throughput_img_per_s": 0.226
   },
   "config": {
     "experiment": "qlora_cross_attention_rank16",
@@ -35,13 +35,14 @@
       "to_k",
       "to_v"
     ],
-    "epochs": 15,
+    "epochs": 20,
     "learning_rate": 0.0002,
     "batch_size": 1,
     "gradient_accumulation_steps": 4,
     "weight_decay": 0.01,
     "lora_dropout": 0.1,
     "quantization": "4bit_nf4",
-    "seed": 42
+    "seed": 42,
+    "early_stopping_patience": 5
   }
 }

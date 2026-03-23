@@ -4,32 +4,32 @@
     "trainable_params": 3875544576,
     "trainable_percentage": 100.0,
     "peak_vram_gb": 30.15,
-    "energy_kwh": 0.005962,
-    "carbon_gco2eq": 5.96,
-    "training_time_hours": 0.29,
-    "adapter_size_mb": 30449.32
+    "energy_kwh": 0.018416,
+    "carbon_gco2eq": 18.42,
+    "training_time_hours": 0.85,
+    "adapter_size_mb": 15224.66
   },
   "validation": {
-    "val_loss": 0.8096
+    "val_loss": 0.8211
   },
   "test": {
-    "fid": 172.79,
-    "clip_score": 15.815,
-    "ocr_exact_match": 0.16,
-    "ocr_word_accuracy": 0.3982,
-    "ocr_cer": 0.7314
+    "fid": -0.0,
+    "clip_score": 15.5621,
+    "ocr_exact_match": 0.25,
+    "ocr_word_accuracy": 0.584,
+    "ocr_cer": 0.4162
   },
   "inference": {
-    "avg_latency_s": 2.918,
-    "std_latency_s": 0.024,
-    "min_latency_s": 2.856,
-    "max_latency_s": 2.948,
-    "throughput_img_per_s": 0.343
+    "avg_latency_s": 2.934,
+    "std_latency_s": 0.023,
+    "min_latency_s": 2.867,
+    "max_latency_s": 2.967,
+    "throughput_img_per_s": 0.341
   },
   "config": {
     "experiment": "full_finetune",
     "model_path": "models/flux2-klein-base-4b",
-    "epochs": 5,
+    "epochs": 15,
     "learning_rate": 2e-06,
     "batch_size": 1,
     "gradient_accumulation_steps": 4,
@@ -38,6 +38,7 @@
     "use_bf16": true,
     "seed": 42,
     "gradient_checkpointing": true,
+    "early_stopping_patience": 4,
     "trainable": "all_transformer",
     "frozen": "text_encoder+vae"
   }

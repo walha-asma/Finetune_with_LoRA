@@ -112,51 +112,77 @@ def get_adapter_size_mb(experiment):
     return round(total_bytes / (1024 ** 2), 2)
 
 
-def build_fid_reference(pipe, test_dataloader, reference_dir):
+# 100 prompts × 3 = 300 reference images — reliable covariance estimate.
+# Seeds: (2024 + k*1000) + i, identical to evaluate_on_test_set.
+FID_IMAGES_PER_PROMPT = 3
+
+
+def build_fid_reference(pipe, test_dataloader, reference_dir,
+                        images_per_prompt=FID_IMAGES_PER_PROMPT):
     reference_dir = Path(reference_dir)
     reference_dir.mkdir(parents=True, exist_ok=True)
 
-    # Check if reference already exists
-    existing = list(reference_dir.glob("*.png"))
-    if existing:
-        print(f"  FID reference already exists ({len(existing)} images), skipping generation.")
-        from PIL import Image
-        return [Image.open(p).convert("RGB") for p in sorted(existing)]
-
-    print(f"  Generating FID reference images from full fine-tune model...")
     all_prompts = []
     for batch in test_dataloader:
         all_prompts.extend(batch["prompt"])
 
+    expected_count = len(all_prompts) * images_per_prompt
+    existing = list(reference_dir.glob("*.png"))
+    if len(existing) >= expected_count:
+        print(f"  FID reference already exists ({len(existing)} images), skipping generation.")
+        from PIL import Image
+        return [Image.open(p).convert("RGB") for p in sorted(existing)]
+
+    for f in existing:
+        f.unlink()
+
+    print(f"  Generating FID reference ({images_per_prompt} images/prompt x {len(all_prompts)} = {expected_count} total)...")
     reference_images = []
     pipe.transformer.eval()
-    for i, prompt in enumerate(all_prompts):
-        # Fixed seed per sample — same seed used in all experiments
-        torch.manual_seed(1000 + i)
-        torch.cuda.manual_seed(1000 + i)
-        with torch.no_grad():
-            image = pipe(
-                prompt=prompt,
-                num_inference_steps=20,
-                guidance_scale=4.0,
-                height=512,
-                width=512,
-                max_sequence_length=512,
-                text_encoder_out_layers=(9, 18, 27)
-            ).images[0]
-        image.save(reference_dir / f"{i:04d}.png")
-        reference_images.append(image)
-        print(f"    [{i+1}/{len(all_prompts)}] reference generated")
+    idx = 0
 
-    print(f"  ✓ FID reference saved to {reference_dir}")
+    for i, prompt in enumerate(all_prompts):
+        for k in range(images_per_prompt):
+            seed = (2024 + k * 1000) + i
+            torch.manual_seed(seed)
+            torch.cuda.manual_seed(seed)
+            with torch.no_grad():
+                image = pipe(
+                    prompt=prompt,
+                    num_inference_steps=20,
+                    guidance_scale=4.0,
+                    height=512,
+                    width=512,
+                    max_sequence_length=512,
+                    text_encoder_out_layers=(9, 18, 27)
+                ).images[0]
+            image.save(reference_dir / f"{idx:04d}.png")
+            reference_images.append(image)
+            idx += 1
+        print(f"    [{i+1}/{len(all_prompts)}] {images_per_prompt} reference images generated")
+
+    print(f"  FID reference saved to {reference_dir} ({len(reference_images)} images)")
     return reference_images
 
 
 def evaluate_all():
     test_dataloader = get_test_dataloader(batch_size=1)
     results_summary = {}
-    fid_reference_images = None  # Built after full_finetune runs
 
+    # === Step 1: build FID reference from full_finetune FIRST ===
+    # All experiments including original_baseline use this same reference
+    # so every FID score is on the same scale and directly comparable.
+    print("\n" + "="*60)
+    print("BUILDING FID REFERENCE (full_finetune)")
+    print("="*60)
+    full_ft_exp = next(e for e in EXPERIMENTS if e["name"] == "full_finetune")
+    pipe_ft = load_pipeline(full_ft_exp)
+    pipe_ft.transformer.eval()
+    fid_reference_images = build_fid_reference(pipe_ft, test_dataloader, FID_REFERENCE_DIR)
+    del pipe_ft
+    torch.cuda.empty_cache()
+
+    # === Step 2: evaluate every experiment with the same FID reference ===
     for exp in EXPERIMENTS:
         name = exp["name"]
         print(f"\n{'='*60}")
@@ -179,16 +205,11 @@ def evaluate_all():
         pipe = load_pipeline(exp)
         pipe.transformer.eval()
 
-        # After full_finetune runs, build the FID reference once
-        if name == "full_finetune" and fid_reference_images is None:
-            print("\n  Building FID reference from full fine-tune model...")
-            fid_reference_images = build_fid_reference(pipe, test_dataloader, FID_REFERENCE_DIR)
-
         use_autocast = exp["type"] == "qlora"
         evaluate_on_test_set(
             pipe, tracker, test_dataloader, name,
             use_autocast=use_autocast,
-            fid_reference_images=fid_reference_images   # None for original_baseline & full_finetune
+            fid_reference_images=fid_reference_images  # same reference for ALL experiments
         )
 
         tracker.save()

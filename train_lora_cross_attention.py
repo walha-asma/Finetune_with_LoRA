@@ -25,8 +25,9 @@ def train_lora_cross_attention(
     model_path="models/flux2-klein-base-4b",
     output_dir="models/lora_cross_attention",
     rank=16,
-    epochs=15,
-    seed=42
+    epochs=20,
+    seed=42,
+    early_stopping_patience=5,
 ):
     set_seed(seed)
 
@@ -47,7 +48,8 @@ def train_lora_cross_attention(
         "weight_decay": 0.01,
         "lora_dropout": 0.1,
         "target_modules": ["to_k", "to_v"],
-        "seed": seed
+        "seed": seed,
+        "early_stopping_patience": early_stopping_patience
     }
 
     tracker = MetricsTracker(experiment_name)
@@ -100,6 +102,7 @@ def train_lora_cross_attention(
     rank_output_dir = f"{output_dir}_rank{rank}"
     Path(rank_output_dir).mkdir(parents=True, exist_ok=True)
     best_val_loss = float("inf")
+    epochs_no_improve = 0
 
     tracker.start_training()
 
@@ -177,8 +180,15 @@ def train_lora_cross_attention(
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
+                epochs_no_improve = 0
                 model.save_pretrained(rank_output_dir)
                 print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+            else:
+                epochs_no_improve += 1
+                print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
+                if epochs_no_improve >= early_stopping_patience:
+                    print(f"  Early stopping triggered at epoch {epoch+1}")
+                    break
 
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
@@ -199,4 +209,4 @@ def train_lora_cross_attention(
 
 if __name__ == "__main__":
     for rank in [16, 32]:
-        train_lora_cross_attention(rank=rank, epochs=15)
+        train_lora_cross_attention(rank=rank, epochs=20)

@@ -22,7 +22,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 
-def train_lora_rank(rank, model_path, epochs=10, seed=42):
+def train_lora_rank(rank, model_path, epochs=15, seed=42, early_stopping_patience=4):
     set_seed(seed)
 
     experiment_name = f"lora_flux2klein_rank{rank}"
@@ -42,7 +42,8 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
         "weight_decay": 0.01,
         "lora_dropout": 0.1,
         "target_modules": ["to_q", "to_k", "to_v", "to_out.0", "ff.net.0.proj", "ff.net.2"],
-        "seed": seed
+        "seed": seed,
+        "early_stopping_patience": early_stopping_patience
     }
 
     tracker = MetricsTracker(experiment_name)
@@ -95,6 +96,7 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
     output_dir = f"models/lora_flux2klein/rank_{rank}"
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     best_val_loss = float("inf")
+    epochs_no_improve = 0
 
     tracker.start_training()
 
@@ -172,8 +174,15 @@ def train_lora_rank(rank, model_path, epochs=10, seed=42):
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
+                epochs_no_improve = 0
                 model.save_pretrained(output_dir)
                 print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+            else:
+                epochs_no_improve += 1
+                print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
+                if epochs_no_improve >= early_stopping_patience:
+                    print(f"  Early stopping triggered at epoch {epoch+1}")
+                    break
 
     resource_metrics = monitor.get_metrics()
     resource_metrics.save_csv(f"results/metrics/{experiment_name}_resources.csv")
@@ -227,6 +236,6 @@ if __name__ == "__main__":
     results = lora_rank_sweep(
         model_path="models/flux2-klein-base-4b",
         ranks=[8, 16, 32, 64],
-        epochs=10,
+        epochs=15,
         seed=42
     )

@@ -5,17 +5,17 @@
   },
   "validation": {},
   "test": {
-    "fid": 228.91,
-    "clip_score": 15.6145,
-    "ocr_exact_match": 0.16,
-    "ocr_word_accuracy": 0.4132,
-    "ocr_cer": 0.7042
+    "fid": 56.68,
+    "clip_score": 15.3822,
+    "ocr_exact_match": 0.25,
+    "ocr_word_accuracy": 0.6256,
+    "ocr_cer": 0.4179
   },
   "inference": {
-    "avg_latency_s": 2.947,
-    "std_latency_s": 0.054,
-    "min_latency_s": 2.9,
-    "max_latency_s": 3.314,
-    "throughput_img_per_s": 0.339
+    "avg_latency_s": 2.969,
+    "std_latency_s": 0.042,
+    "min_latency_s": 2.871,
+    "max_latency_s": 3.253,
+    "throughput_img_per_s": 0.337
   }
 }

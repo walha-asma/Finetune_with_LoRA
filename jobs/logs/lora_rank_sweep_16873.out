@@ -1,0 +1,235 @@
+Job ID : 16873
+Node   : ensta-l40s02
+GPU    : NVIDIA L40S
+Date   : lun. 23 mars 2026 01:46:38 CET
+
+============================================================
+LORA RANK SWEEP
+============================================================
+
+============================================================
+LORA FLUX.2-KLEIN - RANK 8
+============================================================
+
+[1/5] Loading model...
+
+[2/5] Configuring LoRA (rank=8)...
+trainable params: 983,040 || all params: 3,876,527,616 || trainable%: 0.0254
+
+[3/5] Loading dataset...
+Loaded 800 samples from data/train.json
+Loaded 100 samples from data/val.json
+  Train: 800 | Val: 100
+
+[4/5] Setting up optimizer...
+
+[5/5] Training...
+  → Best model saved (val_loss=0.8700)
+Epoch 2/15 - train_loss: 0.8600 | val_loss: 0.8059
+  → Best model saved (val_loss=0.8059)
+  No improvement for 1/4 epochs
+Epoch 4/15 - train_loss: 0.8448 | val_loss: 0.8506
+  No improvement for 2/4 epochs
+  No improvement for 3/4 epochs
+Epoch 6/15 - train_loss: 0.8675 | val_loss: 0.8232
+  No improvement for 4/4 epochs
+  Early stopping triggered at epoch 6
+Saved metrics to: results/metrics/lora_flux2klein_rank8_resources.csv
+✓ Metrics saved to results/metrics/lora_flux2klein_rank8.json
+
+============================================================
+RESULTS: lora_flux2klein_rank8
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 983040
+  trainable_percentage: 0.03
+  peak_vram_gb: 19.11
+  energy_kwh: 0.007865
+  carbon_gco2eq: 7.87
+  training_time_hours: 0.36
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.8059
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ LoRA rank 8 complete
+
+============================================================
+LORA FLUX.2-KLEIN - RANK 16
+============================================================
+
+[1/5] Loading model...
+
+[2/5] Configuring LoRA (rank=16)...
+trainable params: 1,966,080 || all params: 3,877,510,656 || trainable%: 0.0507
+
+[3/5] Loading dataset...
+Loaded 800 samples from data/train.json
+Loaded 100 samples from data/val.json
+  Train: 800 | Val: 100
+
+[4/5] Setting up optimizer...
+
+[5/5] Training...
+  → Best model saved (val_loss=0.8671)
+Epoch 2/15 - train_loss: 0.8581 | val_loss: 0.8029
+  → Best model saved (val_loss=0.8029)
+  No improvement for 1/4 epochs
+Epoch 4/15 - train_loss: 0.8431 | val_loss: 0.8488
+  No improvement for 2/4 epochs
+  No improvement for 3/4 epochs
+Epoch 6/15 - train_loss: 0.8654 | val_loss: 0.8217
+  No improvement for 4/4 epochs
+  Early stopping triggered at epoch 6
+Saved metrics to: results/metrics/lora_flux2klein_rank16_resources.csv
+✓ Metrics saved to results/metrics/lora_flux2klein_rank16.json
+
+============================================================
+RESULTS: lora_flux2klein_rank16
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 1966080
+  trainable_percentage: 0.05
+  peak_vram_gb: 19.13
+  energy_kwh: 0.007869
+  carbon_gco2eq: 7.87
+  training_time_hours: 0.36
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.8029
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ LoRA rank 16 complete
+
+============================================================
+LORA FLUX.2-KLEIN - RANK 32
+============================================================
+
+[1/5] Loading model...
+
+[2/5] Configuring LoRA (rank=32)...
+trainable params: 3,932,160 || all params: 3,879,476,736 || trainable%: 0.1014
+
+[3/5] Loading dataset...
+Loaded 800 samples from data/train.json
+Loaded 100 samples from data/val.json
+  Train: 800 | Val: 100
+
+[4/5] Setting up optimizer...
+
+[5/5] Training...
+  → Best model saved (val_loss=0.8637)
+Epoch 2/15 - train_loss: 0.8531 | val_loss: 0.8032
+  → Best model saved (val_loss=0.8032)
+  No improvement for 1/4 epochs
+Epoch 4/15 - train_loss: 0.8431 | val_loss: 0.8478
+  No improvement for 2/4 epochs
+  No improvement for 3/4 epochs
+Epoch 6/15 - train_loss: 0.8633 | val_loss: 0.8209
+  No improvement for 4/4 epochs
+  Early stopping triggered at epoch 6
+Saved metrics to: results/metrics/lora_flux2klein_rank32_resources.csv
+✓ Metrics saved to results/metrics/lora_flux2klein_rank32.json
+
+============================================================
+RESULTS: lora_flux2klein_rank32
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 3932160
+  trainable_percentage: 0.1
+  peak_vram_gb: 19.16
+  energy_kwh: 0.007888
+  carbon_gco2eq: 7.89
+  training_time_hours: 0.36
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.8032
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ LoRA rank 32 complete
+
+============================================================
+LORA FLUX.2-KLEIN - RANK 64
+============================================================
+
+[1/5] Loading model...
+
+[2/5] Configuring LoRA (rank=64)...
+trainable params: 7,864,320 || all params: 3,883,408,896 || trainable%: 0.2025
+
+[3/5] Loading dataset...
+Loaded 800 samples from data/train.json
+Loaded 100 samples from data/val.json
+  Train: 800 | Val: 100
+
+[4/5] Setting up optimizer...
+
+[5/5] Training...
+  → Best model saved (val_loss=0.8605)
+Epoch 2/15 - train_loss: 0.8502 | val_loss: 0.8055
+  → Best model saved (val_loss=0.8055)
+  No improvement for 1/4 epochs
+Epoch 4/15 - train_loss: 0.8400 | val_loss: 0.8475
+  No improvement for 2/4 epochs
+  No improvement for 3/4 epochs
+Epoch 6/15 - train_loss: 0.8656 | val_loss: 0.8227
+  No improvement for 4/4 epochs
+  Early stopping triggered at epoch 6
+Saved metrics to: results/metrics/lora_flux2klein_rank64_resources.csv
+✓ Metrics saved to results/metrics/lora_flux2klein_rank64.json
+
+============================================================
+RESULTS: lora_flux2klein_rank64
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 7864320
+  trainable_percentage: 0.2
+  peak_vram_gb: 19.23
+  energy_kwh: 0.007892
+  carbon_gco2eq: 7.89
+  training_time_hours: 0.36
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.8055
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ LoRA rank 64 complete
+
+============================================================
+RANK COMPARISON
+============================================================
+  Rank  8: params=983,040 | vram=19.11GB | val_loss=0.8059
+  Rank 16: params=1,966,080 | vram=19.13GB | val_loss=0.8029
+  Rank 32: params=3,932,160 | vram=19.16GB | val_loss=0.8032
+  Rank 64: params=7,864,320 | vram=19.23GB | val_loss=0.8055
+
+✓ Comparison saved to results/metrics/lora_rank_comparison.json
+Done: lun. 23 mars 2026 03:13:25 CET

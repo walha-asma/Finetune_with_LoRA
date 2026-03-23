@@ -1,0 +1,1244 @@
+Job ID : 16928
+Node   : ensta-l40s02
+GPU    : NVIDIA L40S
+Date   : lun. 23 mars 2026 11:50:33 CET
+Loaded 100 samples from data/test.json
+
+============================================================
+BUILDING FID REFERENCE (full_finetune)
+============================================================
+  FID reference already exists (300 images), skipping generation.
+
+============================================================
+Evaluating: original_baseline
+============================================================
+  Adapter size: 22616.69 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (3.25s)
+  [2/100] done (2.87s)
+  [3/100] done (2.91s)
+  [4/100] done (2.89s)
+  [5/100] done (2.89s)
+  [6/100] done (2.90s)
+  [7/100] done (2.90s)
+  [8/100] done (2.91s)
+  [9/100] done (2.91s)
+  [10/100] done (2.91s)
+  [11/100] done (2.92s)
+  [12/100] done (2.92s)
+  [13/100] done (2.91s)
+  [14/100] done (2.93s)
+  [15/100] done (2.93s)
+  [16/100] done (2.93s)
+  [17/100] done (2.92s)
+  [18/100] done (2.93s)
+  [19/100] done (2.94s)
+  [20/100] done (2.94s)
+  [21/100] done (2.95s)
+  [22/100] done (2.95s)
+  [23/100] done (2.96s)
+  [24/100] done (2.96s)
+  [25/100] done (2.96s)
+  [26/100] done (2.96s)
+  [27/100] done (2.96s)
+  [28/100] done (2.97s)
+  [29/100] done (2.97s)
+  [30/100] done (2.97s)
+  [31/100] done (2.98s)
+  [32/100] done (2.98s)
+  [33/100] done (2.97s)
+  [34/100] done (2.97s)
+  [35/100] done (2.97s)
+  [36/100] done (2.97s)
+  [37/100] done (2.97s)
+  [38/100] done (2.97s)
+  [39/100] done (2.97s)
+  [40/100] done (2.94s)
+  [41/100] done (2.94s)
+  [42/100] done (2.94s)
+  [43/100] done (2.97s)
+  [44/100] done (2.98s)
+  [45/100] done (2.98s)
+  [46/100] done (2.98s)
+  [47/100] done (2.98s)
+  [48/100] done (2.99s)
+  [49/100] done (2.99s)
+  [50/100] done (2.99s)
+  [51/100] done (2.99s)
+  [52/100] done (3.00s)
+  [53/100] done (2.99s)
+  [54/100] done (2.99s)
+  [55/100] done (3.00s)
+  [56/100] done (2.96s)
+  [57/100] done (2.96s)
+  [58/100] done (3.00s)
+  [59/100] done (2.96s)
+  [60/100] done (2.96s)
+  [61/100] done (3.00s)
+  [62/100] done (2.97s)
+  [63/100] done (2.96s)
+  [64/100] done (2.97s)
+  [65/100] done (3.00s)
+  [66/100] done (2.97s)
+  [67/100] done (2.97s)
+  [68/100] done (2.97s)
+  [69/100] done (2.96s)
+  [70/100] done (2.97s)
+  [71/100] done (2.97s)
+  [72/100] done (2.96s)
+  [73/100] done (2.97s)
+  [74/100] done (2.96s)
+  [75/100] done (3.00s)
+  [76/100] done (3.01s)
+  [77/100] done (3.01s)
+  [78/100] done (3.00s)
+  [79/100] done (3.01s)
+  [80/100] done (3.01s)
+  [81/100] done (2.98s)
+  [82/100] done (3.01s)
+  [83/100] done (3.01s)
+  [84/100] done (2.97s)
+  [85/100] done (2.96s)
+  [86/100] done (2.97s)
+  [87/100] done (2.97s)
+  [88/100] done (3.01s)
+  [89/100] done (3.00s)
+  [90/100] done (3.00s)
+  [91/100] done (3.00s)
+  [92/100] done (2.97s)
+  [93/100] done (2.97s)
+  [94/100] done (2.97s)
+  [95/100] done (2.98s)
+  [96/100] done (2.98s)
+  [97/100] done (2.97s)
+  [98/100] done (2.98s)
+  [99/100] done (3.01s)
+  [100/100] done (3.01s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 56.68  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.3822  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2500  (normalized)
+    OCR word accuracy: 0.6256  (normalized)
+    OCR CER:           0.4179  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               56.68
+  CLIP score:        15.3822
+  OCR exact match:   0.25
+  OCR word accuracy: 0.6256
+  Avg latency:       2.969s
+  Images saved to:   results/generated_images/original_baseline/test/
+✓ Metrics saved to results/metrics/original_baseline.json
+
+============================================================
+Evaluating: full_finetune
+============================================================
+  Adapter size: 15224.66 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.87s)
+  [2/100] done (2.89s)
+  [3/100] done (2.88s)
+  [4/100] done (2.89s)
+  [5/100] done (2.91s)
+  [6/100] done (2.92s)
+  [7/100] done (2.89s)
+  [8/100] done (2.89s)
+  [9/100] done (2.92s)
+  [10/100] done (2.89s)
+  [11/100] done (2.92s)
+  [12/100] done (2.92s)
+  [13/100] done (2.89s)
+  [14/100] done (2.91s)
+  [15/100] done (2.89s)
+  [16/100] done (2.92s)
+  [17/100] done (2.92s)
+  [18/100] done (2.90s)
+  [19/100] done (2.91s)
+  [20/100] done (2.91s)
+  [21/100] done (2.92s)
+  [22/100] done (2.92s)
+  [23/100] done (2.92s)
+  [24/100] done (2.94s)
+  [25/100] done (2.94s)
+  [26/100] done (2.94s)
+  [27/100] done (2.94s)
+  [28/100] done (2.93s)
+  [29/100] done (2.92s)
+  [30/100] done (2.94s)
+  [31/100] done (2.95s)
+  [32/100] done (2.92s)
+  [33/100] done (2.96s)
+  [34/100] done (2.95s)
+  [35/100] done (2.93s)
+  [36/100] done (2.92s)
+  [37/100] done (2.95s)
+  [38/100] done (2.95s)
+  [39/100] done (2.94s)
+  [40/100] done (2.95s)
+  [41/100] done (2.95s)
+  [42/100] done (2.95s)
+  [43/100] done (2.94s)
+  [44/100] done (2.92s)
+  [45/100] done (2.92s)
+  [46/100] done (2.96s)
+  [47/100] done (2.95s)
+  [48/100] done (2.96s)
+  [49/100] done (2.96s)
+  [50/100] done (2.95s)
+  [51/100] done (2.95s)
+  [52/100] done (2.95s)
+  [53/100] done (2.95s)
+  [54/100] done (2.96s)
+  [55/100] done (2.93s)
+  [56/100] done (2.92s)
+  [57/100] done (2.93s)
+  [58/100] done (2.96s)
+  [59/100] done (2.96s)
+  [60/100] done (2.95s)
+  [61/100] done (2.96s)
+  [62/100] done (2.96s)
+  [63/100] done (2.96s)
+  [64/100] done (2.92s)
+  [65/100] done (2.93s)
+  [66/100] done (2.96s)
+  [67/100] done (2.97s)
+  [68/100] done (2.97s)
+  [69/100] done (2.93s)
+  [70/100] done (2.93s)
+  [71/100] done (2.93s)
+  [72/100] done (2.93s)
+  [73/100] done (2.93s)
+  [74/100] done (2.93s)
+  [75/100] done (2.93s)
+  [76/100] done (2.92s)
+  [77/100] done (2.92s)
+  [78/100] done (2.95s)
+  [79/100] done (2.96s)
+  [80/100] done (2.96s)
+  [81/100] done (2.94s)
+  [82/100] done (2.97s)
+  [83/100] done (2.96s)
+  [84/100] done (2.93s)
+  [85/100] done (2.93s)
+  [86/100] done (2.93s)
+  [87/100] done (2.93s)
+  [88/100] done (2.93s)
+  [89/100] done (2.93s)
+  [90/100] done (2.96s)
+  [91/100] done (2.96s)
+  [92/100] done (2.96s)
+  [93/100] done (2.96s)
+  [94/100] done (2.95s)
+  [95/100] done (2.96s)
+  [96/100] done (2.93s)
+  [97/100] done (2.93s)
+  [98/100] done (2.96s)
+  [99/100] done (2.96s)
+  [100/100] done (2.96s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: -0.00  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.5621  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2500  (normalized)
+    OCR word accuracy: 0.5840  (normalized)
+    OCR CER:           0.4162  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               -0.00
+  CLIP score:        15.5621
+  OCR exact match:   0.25
+  OCR word accuracy: 0.584
+  Avg latency:       2.934s
+  Images saved to:   results/generated_images/full_finetune/test/
+✓ Metrics saved to results/metrics/full_finetune.json
+
+============================================================
+Evaluating: lora_flux2klein_rank8
+============================================================
+  Adapter size: 3.76 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.97s)
+  [2/100] done (3.00s)
+  [3/100] done (3.00s)
+  [4/100] done (2.98s)
+  [5/100] done (3.01s)
+  [6/100] done (3.01s)
+  [7/100] done (3.01s)
+  [8/100] done (3.01s)
+  [9/100] done (3.01s)
+  [10/100] done (3.02s)
+  [11/100] done (2.99s)
+  [12/100] done (3.02s)
+  [13/100] done (3.02s)
+  [14/100] done (3.02s)
+  [15/100] done (3.03s)
+  [16/100] done (3.03s)
+  [17/100] done (3.02s)
+  [18/100] done (3.02s)
+  [19/100] done (3.03s)
+  [20/100] done (3.03s)
+  [21/100] done (3.03s)
+  [22/100] done (3.03s)
+  [23/100] done (3.00s)
+  [24/100] done (3.01s)
+  [25/100] done (3.00s)
+  [26/100] done (3.03s)
+  [27/100] done (2.99s)
+  [28/100] done (2.97s)
+  [29/100] done (2.97s)
+  [30/100] done (2.96s)
+  [31/100] done (3.00s)
+  [32/100] done (3.00s)
+  [33/100] done (3.01s)
+  [34/100] done (3.00s)
+  [35/100] done (3.00s)
+  [36/100] done (3.00s)
+  [37/100] done (3.00s)
+  [38/100] done (3.00s)
+  [39/100] done (3.00s)
+  [40/100] done (3.00s)
+  [41/100] done (3.01s)
+  [42/100] done (2.99s)
+  [43/100] done (2.99s)
+  [44/100] done (3.01s)
+  [45/100] done (3.01s)
+  [46/100] done (2.98s)
+  [47/100] done (2.98s)
+  [48/100] done (2.97s)
+  [49/100] done (2.98s)
+  [50/100] done (2.99s)
+  [51/100] done (3.01s)
+  [52/100] done (3.01s)
+  [53/100] done (3.00s)
+  [54/100] done (3.00s)
+  [55/100] done (3.01s)
+  [56/100] done (3.01s)
+  [57/100] done (3.01s)
+  [58/100] done (2.97s)
+  [59/100] done (2.98s)
+  [60/100] done (2.96s)
+  [61/100] done (2.97s)
+  [62/100] done (3.01s)
+  [63/100] done (3.01s)
+  [64/100] done (3.01s)
+  [65/100] done (3.01s)
+  [66/100] done (2.97s)
+  [67/100] done (2.98s)
+  [68/100] done (2.98s)
+  [69/100] done (2.98s)
+  [70/100] done (2.97s)
+  [71/100] done (2.98s)
+  [72/100] done (2.98s)
+  [73/100] done (2.98s)
+  [74/100] done (2.98s)
+  [75/100] done (2.98s)
+  [76/100] done (3.01s)
+  [77/100] done (3.02s)
+  [78/100] done (3.01s)
+  [79/100] done (3.01s)
+  [80/100] done (3.01s)
+  [81/100] done (3.02s)
+  [82/100] done (2.98s)
+  [83/100] done (3.01s)
+  [84/100] done (2.98s)
+  [85/100] done (2.98s)
+  [86/100] done (2.98s)
+  [87/100] done (3.01s)
+  [88/100] done (3.01s)
+  [89/100] done (3.01s)
+  [90/100] done (3.01s)
+  [91/100] done (3.01s)
+  [92/100] done (3.02s)
+  [93/100] done (3.01s)
+  [94/100] done (3.01s)
+  [95/100] done (3.01s)
+  [96/100] done (3.01s)
+  [97/100] done (3.01s)
+  [98/100] done (3.01s)
+  [99/100] done (2.98s)
+  [100/100] done (2.98s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 56.19  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.5065  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2800  (normalized)
+    OCR word accuracy: 0.5694  (normalized)
+    OCR CER:           0.4573  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               56.19
+  CLIP score:        15.5065
+  OCR exact match:   0.28
+  OCR word accuracy: 0.5694
+  Avg latency:       3.0s
+  Images saved to:   results/generated_images/lora_flux2klein_rank8/test/
+✓ Metrics saved to results/metrics/lora_flux2klein_rank8.json
+
+============================================================
+Evaluating: lora_flux2klein_rank16
+============================================================
+  Adapter size: 7.51 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.97s)
+  [2/100] done (3.00s)
+  [3/100] done (3.02s)
+  [4/100] done (3.02s)
+  [5/100] done (3.02s)
+  [6/100] done (3.01s)
+  [7/100] done (2.98s)
+  [8/100] done (2.98s)
+  [9/100] done (3.01s)
+  [10/100] done (3.02s)
+  [11/100] done (3.02s)
+  [12/100] done (3.02s)
+  [13/100] done (3.02s)
+  [14/100] done (3.02s)
+  [15/100] done (2.99s)
+  [16/100] done (2.98s)
+  [17/100] done (3.03s)
+  [18/100] done (2.99s)
+  [19/100] done (2.99s)
+  [20/100] done (2.99s)
+  [21/100] done (2.99s)
+  [22/100] done (2.99s)
+  [23/100] done (3.00s)
+  [24/100] done (3.04s)
+  [25/100] done (3.04s)
+  [26/100] done (3.03s)
+  [27/100] done (3.04s)
+  [28/100] done (3.04s)
+  [29/100] done (3.04s)
+  [30/100] done (3.04s)
+  [31/100] done (3.01s)
+  [32/100] done (3.04s)
+  [33/100] done (3.05s)
+  [34/100] done (3.04s)
+  [35/100] done (3.05s)
+  [36/100] done (3.04s)
+  [37/100] done (3.01s)
+  [38/100] done (3.01s)
+  [39/100] done (3.05s)
+  [40/100] done (3.04s)
+  [41/100] done (3.02s)
+  [42/100] done (3.05s)
+  [43/100] done (3.05s)
+  [44/100] done (3.05s)
+  [45/100] done (3.06s)
+  [46/100] done (3.06s)
+  [47/100] done (3.05s)
+  [48/100] done (3.06s)
+  [49/100] done (3.06s)
+  [50/100] done (3.06s)
+  [51/100] done (3.02s)
+  [52/100] done (3.03s)
+  [53/100] done (3.05s)
+  [54/100] done (3.06s)
+  [55/100] done (3.05s)
+  [56/100] done (3.06s)
+  [57/100] done (3.05s)
+  [58/100] done (3.06s)
+  [59/100] done (3.03s)
+  [60/100] done (3.02s)
+  [61/100] done (3.02s)
+  [62/100] done (3.03s)
+  [63/100] done (3.03s)
+  [64/100] done (3.02s)
+  [65/100] done (3.02s)
+  [66/100] done (3.03s)
+  [67/100] done (3.02s)
+  [68/100] done (3.03s)
+  [69/100] done (3.06s)
+  [70/100] done (3.06s)
+  [71/100] done (3.06s)
+  [72/100] done (3.06s)
+  [73/100] done (3.05s)
+  [74/100] done (3.06s)
+  [75/100] done (3.04s)
+  [76/100] done (3.03s)
+  [77/100] done (3.03s)
+  [78/100] done (3.02s)
+  [79/100] done (3.04s)
+  [80/100] done (3.03s)
+  [81/100] done (3.03s)
+  [82/100] done (3.02s)
+  [83/100] done (3.03s)
+  [84/100] done (3.06s)
+  [85/100] done (3.06s)
+  [86/100] done (3.06s)
+  [87/100] done (3.06s)
+  [88/100] done (3.07s)
+  [89/100] done (3.06s)
+  [90/100] done (3.07s)
+  [91/100] done (3.06s)
+  [92/100] done (3.06s)
+  [93/100] done (3.03s)
+  [94/100] done (3.03s)
+  [95/100] done (3.06s)
+  [96/100] done (3.06s)
+  [97/100] done (3.06s)
+  [98/100] done (3.06s)
+  [99/100] done (3.02s)
+  [100/100] done (3.02s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 59.44  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.4050  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2400  (normalized)
+    OCR word accuracy: 0.5656  (normalized)
+    OCR CER:           0.4210  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               59.44
+  CLIP score:        15.4050
+  OCR exact match:   0.24
+  OCR word accuracy: 0.5656
+  Avg latency:       3.034s
+  Images saved to:   results/generated_images/lora_flux2klein_rank16/test/
+✓ Metrics saved to results/metrics/lora_flux2klein_rank16.json
+
+============================================================
+Evaluating: lora_flux2klein_rank32
+============================================================
+  Adapter size: 15.01 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.98s)
+  [2/100] done (3.01s)
+  [3/100] done (3.01s)
+  [4/100] done (3.02s)
+  [5/100] done (3.01s)
+  [6/100] done (3.02s)
+  [7/100] done (3.01s)
+  [8/100] done (3.01s)
+  [9/100] done (3.02s)
+  [10/100] done (3.02s)
+  [11/100] done (3.03s)
+  [12/100] done (3.02s)
+  [13/100] done (3.03s)
+  [14/100] done (3.00s)
+  [15/100] done (3.00s)
+  [16/100] done (3.00s)
+  [17/100] done (3.00s)
+  [18/100] done (2.99s)
+  [19/100] done (3.00s)
+  [20/100] done (3.04s)
+  [21/100] done (3.00s)
+  [22/100] done (3.00s)
+  [23/100] done (3.01s)
+  [24/100] done (3.01s)
+  [25/100] done (3.05s)
+  [26/100] done (3.05s)
+  [27/100] done (3.04s)
+  [28/100] done (3.05s)
+  [29/100] done (3.05s)
+  [30/100] done (3.02s)
+  [31/100] done (3.05s)
+  [32/100] done (3.05s)
+  [33/100] done (3.05s)
+  [34/100] done (3.02s)
+  [35/100] done (3.02s)
+  [36/100] done (3.02s)
+  [37/100] done (3.02s)
+  [38/100] done (3.03s)
+  [39/100] done (3.05s)
+  [40/100] done (3.05s)
+  [41/100] done (3.06s)
+  [42/100] done (3.05s)
+  [43/100] done (3.05s)
+  [44/100] done (3.05s)
+  [45/100] done (3.06s)
+  [46/100] done (3.06s)
+  [47/100] done (3.06s)
+  [48/100] done (3.06s)
+  [49/100] done (3.02s)
+  [50/100] done (3.02s)
+  [51/100] done (3.06s)
+  [52/100] done (3.03s)
+  [53/100] done (3.03s)
+  [54/100] done (3.03s)
+  [55/100] done (3.06s)
+  [56/100] done (3.06s)
+  [57/100] done (3.06s)
+  [58/100] done (3.03s)
+  [59/100] done (3.02s)
+  [60/100] done (3.06s)
+  [61/100] done (3.06s)
+  [62/100] done (3.06s)
+  [63/100] done (3.06s)
+  [64/100] done (3.06s)
+  [65/100] done (3.06s)
+  [66/100] done (3.03s)
+  [67/100] done (3.03s)
+  [68/100] done (3.07s)
+  [69/100] done (3.03s)
+  [70/100] done (3.03s)
+  [71/100] done (3.07s)
+  [72/100] done (3.06s)
+  [73/100] done (3.07s)
+  [74/100] done (3.07s)
+  [75/100] done (3.07s)
+  [76/100] done (3.06s)
+  [77/100] done (3.06s)
+  [78/100] done (3.06s)
+  [79/100] done (3.06s)
+  [80/100] done (3.06s)
+  [81/100] done (3.06s)
+  [82/100] done (3.06s)
+  [83/100] done (3.06s)
+  [84/100] done (3.06s)
+  [85/100] done (3.06s)
+  [86/100] done (3.03s)
+  [87/100] done (3.04s)
+  [88/100] done (3.06s)
+  [89/100] done (3.06s)
+  [90/100] done (3.07s)
+  [91/100] done (3.06s)
+  [92/100] done (3.06s)
+  [93/100] done (3.06s)
+  [94/100] done (3.06s)
+  [95/100] done (3.07s)
+  [96/100] done (3.07s)
+  [97/100] done (3.07s)
+  [98/100] done (3.07s)
+  [99/100] done (3.07s)
+  [100/100] done (3.06s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 64.43  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.5418  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2700  (normalized)
+    OCR word accuracy: 0.5935  (normalized)
+    OCR CER:           0.4160  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               64.43
+  CLIP score:        15.5418
+  OCR exact match:   0.27
+  OCR word accuracy: 0.5935
+  Avg latency:       3.041s
+  Images saved to:   results/generated_images/lora_flux2klein_rank32/test/
+✓ Metrics saved to results/metrics/lora_flux2klein_rank32.json
+
+============================================================
+Evaluating: lora_flux2klein_rank64
+============================================================
+  Adapter size: 30.01 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.99s)
+  [2/100] done (3.01s)
+  [3/100] done (3.02s)
+  [4/100] done (2.99s)
+  [5/100] done (3.02s)
+  [6/100] done (3.02s)
+  [7/100] done (3.00s)
+  [8/100] done (3.00s)
+  [9/100] done (3.02s)
+  [10/100] done (3.03s)
+  [11/100] done (3.00s)
+  [12/100] done (3.01s)
+  [13/100] done (3.04s)
+  [14/100] done (3.04s)
+  [15/100] done (3.04s)
+  [16/100] done (3.04s)
+  [17/100] done (3.04s)
+  [18/100] done (3.04s)
+  [19/100] done (3.05s)
+  [20/100] done (3.05s)
+  [21/100] done (3.05s)
+  [22/100] done (3.02s)
+  [23/100] done (3.02s)
+  [24/100] done (3.05s)
+  [25/100] done (3.05s)
+  [26/100] done (3.05s)
+  [27/100] done (3.06s)
+  [28/100] done (3.06s)
+  [29/100] done (3.05s)
+  [30/100] done (3.03s)
+  [31/100] done (3.06s)
+  [32/100] done (3.06s)
+  [33/100] done (3.06s)
+  [34/100] done (3.06s)
+  [35/100] done (3.06s)
+  [36/100] done (3.06s)
+  [37/100] done (3.06s)
+  [38/100] done (3.06s)
+  [39/100] done (3.06s)
+  [40/100] done (3.06s)
+  [41/100] done (3.07s)
+  [42/100] done (3.07s)
+  [43/100] done (3.07s)
+  [44/100] done (3.07s)
+  [45/100] done (3.07s)
+  [46/100] done (3.07s)
+  [47/100] done (3.07s)
+  [48/100] done (3.03s)
+  [49/100] done (3.04s)
+  [50/100] done (3.04s)
+  [51/100] done (3.07s)
+  [52/100] done (3.04s)
+  [53/100] done (3.03s)
+  [54/100] done (3.07s)
+  [55/100] done (3.04s)
+  [56/100] done (3.07s)
+  [57/100] done (3.07s)
+  [58/100] done (3.07s)
+  [59/100] done (3.07s)
+  [60/100] done (3.07s)
+  [61/100] done (3.07s)
+  [62/100] done (3.07s)
+  [63/100] done (3.07s)
+  [64/100] done (3.07s)
+  [65/100] done (3.08s)
+  [66/100] done (3.07s)
+  [67/100] done (3.07s)
+  [68/100] done (3.07s)
+  [69/100] done (3.07s)
+  [70/100] done (3.06s)
+  [71/100] done (3.08s)
+  [72/100] done (3.07s)
+  [73/100] done (3.07s)
+  [74/100] done (3.04s)
+  [75/100] done (3.08s)
+  [76/100] done (3.07s)
+  [77/100] done (3.04s)
+  [78/100] done (3.03s)
+  [79/100] done (3.04s)
+  [80/100] done (3.03s)
+  [81/100] done (3.08s)
+  [82/100] done (3.08s)
+  [83/100] done (3.05s)
+  [84/100] done (3.08s)
+  [85/100] done (3.05s)
+  [86/100] done (3.08s)
+  [87/100] done (3.08s)
+  [88/100] done (3.05s)
+  [89/100] done (3.08s)
+  [90/100] done (3.08s)
+  [91/100] done (3.08s)
+  [92/100] done (3.07s)
+  [93/100] done (3.07s)
+  [94/100] done (3.07s)
+  [95/100] done (3.07s)
+  [96/100] done (3.07s)
+  [97/100] done (3.08s)
+  [98/100] done (3.08s)
+  [99/100] done (3.08s)
+  [100/100] done (3.04s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 74.80  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.6741  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.1700  (normalized)
+    OCR word accuracy: 0.4857  (normalized)
+    OCR CER:           0.4548  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               74.80
+  CLIP score:        15.6741
+  OCR exact match:   0.17
+  OCR word accuracy: 0.4857
+  Avg latency:       3.053s
+  Images saved to:   results/generated_images/lora_flux2klein_rank64/test/
+✓ Metrics saved to results/metrics/lora_flux2klein_rank64.json
+
+============================================================
+Evaluating: lora_cross_attention_rank16
+============================================================
+  Adapter size: 3.75 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.91s)
+  [2/100] done (2.91s)
+  [3/100] done (2.92s)
+  [4/100] done (2.94s)
+  [5/100] done (2.95s)
+  [6/100] done (2.94s)
+  [7/100] done (2.92s)
+  [8/100] done (2.92s)
+  [9/100] done (2.93s)
+  [10/100] done (2.96s)
+  [11/100] done (2.97s)
+  [12/100] done (2.92s)
+  [13/100] done (2.93s)
+  [14/100] done (2.94s)
+  [15/100] done (2.94s)
+  [16/100] done (2.94s)
+  [17/100] done (2.97s)
+  [18/100] done (2.97s)
+  [19/100] done (2.98s)
+  [20/100] done (2.98s)
+  [21/100] done (2.98s)
+  [22/100] done (2.98s)
+  [23/100] done (2.95s)
+  [24/100] done (2.98s)
+  [25/100] done (2.99s)
+  [26/100] done (2.96s)
+  [27/100] done (2.96s)
+  [28/100] done (2.96s)
+  [29/100] done (2.99s)
+  [30/100] done (2.99s)
+  [31/100] done (3.00s)
+  [32/100] done (2.99s)
+  [33/100] done (2.97s)
+  [34/100] done (3.00s)
+  [35/100] done (2.97s)
+  [36/100] done (2.97s)
+  [37/100] done (2.97s)
+  [38/100] done (2.97s)
+  [39/100] done (2.97s)
+  [40/100] done (2.97s)
+  [41/100] done (2.98s)
+  [42/100] done (2.99s)
+  [43/100] done (2.98s)
+  [44/100] done (2.98s)
+  [45/100] done (3.02s)
+  [46/100] done (3.02s)
+  [47/100] done (3.01s)
+  [48/100] done (2.98s)
+  [49/100] done (2.99s)
+  [50/100] done (2.99s)
+  [51/100] done (3.02s)
+  [52/100] done (3.02s)
+  [53/100] done (2.99s)
+  [54/100] done (3.02s)
+  [55/100] done (3.02s)
+  [56/100] done (3.02s)
+  [57/100] done (3.02s)
+  [58/100] done (3.02s)
+  [59/100] done (3.02s)
+  [60/100] done (3.02s)
+  [61/100] done (2.99s)
+  [62/100] done (3.02s)
+  [63/100] done (2.99s)
+  [64/100] done (2.99s)
+  [65/100] done (2.99s)
+  [66/100] done (2.99s)
+  [67/100] done (2.99s)
+  [68/100] done (2.99s)
+  [69/100] done (2.99s)
+  [70/100] done (2.99s)
+  [71/100] done (2.99s)
+  [72/100] done (3.00s)
+  [73/100] done (3.00s)
+  [74/100] done (3.00s)
+  [75/100] done (3.01s)
+  [76/100] done (3.00s)
+  [77/100] done (3.00s)
+  [78/100] done (3.00s)
+  [79/100] done (3.00s)
+  [80/100] done (3.03s)
+  [81/100] done (3.03s)
+  [82/100] done (3.02s)
+  [83/100] done (3.03s)
+  [84/100] done (3.03s)
+  [85/100] done (3.03s)
+  [86/100] done (3.03s)
+  [87/100] done (3.03s)
+  [88/100] done (3.03s)
+  [89/100] done (3.03s)
+  [90/100] done (3.03s)
+  [91/100] done (2.99s)
+  [92/100] done (2.99s)
+  [93/100] done (2.99s)
+  [94/100] done (2.99s)
+  [95/100] done (3.03s)
+  [96/100] done (3.03s)
+  [97/100] done (3.02s)
+  [98/100] done (2.99s)
+  [99/100] done (2.99s)
+  [100/100] done (3.02s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 66.01  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.2953  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.3000  (normalized)
+    OCR word accuracy: 0.6155  (normalized)
+    OCR CER:           0.3951  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               66.01
+  CLIP score:        15.2953
+  OCR exact match:   0.3
+  OCR word accuracy: 0.6155
+  Avg latency:       2.987s
+  Images saved to:   results/generated_images/lora_cross_attention_rank16/test/
+✓ Metrics saved to results/metrics/lora_cross_attention_rank16.json
+
+============================================================
+Evaluating: lora_cross_attention_rank32
+============================================================
+  Adapter size: 7.5 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (2.94s)
+  [2/100] done (2.96s)
+  [3/100] done (2.98s)
+  [4/100] done (2.96s)
+  [5/100] done (2.99s)
+  [6/100] done (2.96s)
+  [7/100] done (2.96s)
+  [8/100] done (2.97s)
+  [9/100] done (2.97s)
+  [10/100] done (2.97s)
+  [11/100] done (2.98s)
+  [12/100] done (3.00s)
+  [13/100] done (3.01s)
+  [14/100] done (3.02s)
+  [15/100] done (2.99s)
+  [16/100] done (3.02s)
+  [17/100] done (3.02s)
+  [18/100] done (2.98s)
+  [19/100] done (2.99s)
+  [20/100] done (3.02s)
+  [21/100] done (3.02s)
+  [22/100] done (3.02s)
+  [23/100] done (3.02s)
+  [24/100] done (3.02s)
+  [25/100] done (3.02s)
+  [26/100] done (3.02s)
+  [27/100] done (2.99s)
+  [28/100] done (2.99s)
+  [29/100] done (3.02s)
+  [30/100] done (3.02s)
+  [31/100] done (3.00s)
+  [32/100] done (3.02s)
+  [33/100] done (3.02s)
+  [34/100] done (3.02s)
+  [35/100] done (3.02s)
+  [36/100] done (3.03s)
+  [37/100] done (3.03s)
+  [38/100] done (3.03s)
+  [39/100] done (3.03s)
+  [40/100] done (3.02s)
+  [41/100] done (3.03s)
+  [42/100] done (3.03s)
+  [43/100] done (3.02s)
+  [44/100] done (3.01s)
+  [45/100] done (3.00s)
+  [46/100] done (3.01s)
+  [47/100] done (3.00s)
+  [48/100] done (3.00s)
+  [49/100] done (3.00s)
+  [50/100] done (3.01s)
+  [51/100] done (3.03s)
+  [52/100] done (3.03s)
+  [53/100] done (3.02s)
+  [54/100] done (3.03s)
+  [55/100] done (3.03s)
+  [56/100] done (3.02s)
+  [57/100] done (3.03s)
+  [58/100] done (3.00s)
+  [59/100] done (3.03s)
+  [60/100] done (3.00s)
+  [61/100] done (3.01s)
+  [62/100] done (3.01s)
+  [63/100] done (3.01s)
+  [64/100] done (3.01s)
+  [65/100] done (3.00s)
+  [66/100] done (3.01s)
+  [67/100] done (3.00s)
+  [68/100] done (3.00s)
+  [69/100] done (3.01s)
+  [70/100] done (3.00s)
+  [71/100] done (3.01s)
+  [72/100] done (3.03s)
+  [73/100] done (3.02s)
+  [74/100] done (2.99s)
+  [75/100] done (2.99s)
+  [76/100] done (3.02s)
+  [77/100] done (3.02s)
+  [78/100] done (3.03s)
+  [79/100] done (3.03s)
+  [80/100] done (3.03s)
+  [81/100] done (3.03s)
+  [82/100] done (3.03s)
+  [83/100] done (2.99s)
+  [84/100] done (3.00s)
+  [85/100] done (2.99s)
+  [86/100] done (3.03s)
+  [87/100] done (3.03s)
+  [88/100] done (3.03s)
+  [89/100] done (3.03s)
+  [90/100] done (3.03s)
+  [91/100] done (3.02s)
+  [92/100] done (3.02s)
+  [93/100] done (3.03s)
+  [94/100] done (3.03s)
+  [95/100] done (2.99s)
+  [96/100] done (2.99s)
+  [97/100] done (3.02s)
+  [98/100] done (2.99s)
+  [99/100] done (3.00s)
+  [100/100] done (3.03s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 67.58  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.4661  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2500  (normalized)
+    OCR word accuracy: 0.5975  (normalized)
+    OCR CER:           0.4361  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               67.58
+  CLIP score:        15.4661
+  OCR exact match:   0.25
+  OCR word accuracy: 0.5975
+  Avg latency:       3.009s
+  Images saved to:   results/generated_images/lora_cross_attention_rank32/test/
+✓ Metrics saved to results/metrics/lora_cross_attention_rank32.json
+
+============================================================
+Evaluating: qlora_cross_attention_rank16
+============================================================
+  Adapter size: 3.75 MB
+
+======================================================================
+TEST SET EVALUATION
+======================================================================
+Test set: 100 samples
+  [INFO] bfloat16 autocast enabled for inference (QLoRA mode)
+
+[1/4] Generating images (3 per prompt for FID, 1 for CLIP/OCR)...
+  [1/100] done (4.36s)
+  [2/100] done (4.38s)
+  [3/100] done (4.39s)
+  [4/100] done (4.39s)
+  [5/100] done (4.40s)
+  [6/100] done (4.39s)
+  [7/100] done (4.39s)
+  [8/100] done (4.39s)
+  [9/100] done (4.39s)
+  [10/100] done (4.39s)
+  [11/100] done (4.40s)
+  [12/100] done (4.40s)
+  [13/100] done (4.41s)
+  [14/100] done (4.41s)
+  [15/100] done (4.41s)
+  [16/100] done (4.42s)
+  [17/100] done (4.41s)
+  [18/100] done (4.42s)
+  [19/100] done (4.41s)
+  [20/100] done (4.42s)
+  [21/100] done (4.41s)
+  [22/100] done (4.42s)
+  [23/100] done (4.41s)
+  [24/100] done (4.41s)
+  [25/100] done (4.41s)
+  [26/100] done (4.41s)
+  [27/100] done (4.41s)
+  [28/100] done (4.42s)
+  [29/100] done (4.42s)
+  [30/100] done (4.42s)
+  [31/100] done (4.41s)
+  [32/100] done (4.42s)
+  [33/100] done (4.42s)
+  [34/100] done (4.42s)
+  [35/100] done (4.42s)
+  [36/100] done (4.42s)
+  [37/100] done (4.43s)
+  [38/100] done (4.43s)
+  [39/100] done (4.43s)
+  [40/100] done (4.43s)
+  [41/100] done (4.42s)
+  [42/100] done (4.43s)
+  [43/100] done (4.42s)
+  [44/100] done (4.42s)
+  [45/100] done (4.42s)
+  [46/100] done (4.43s)
+  [47/100] done (4.43s)
+  [48/100] done (4.42s)
+  [49/100] done (4.42s)
+  [50/100] done (4.43s)
+  [51/100] done (4.43s)
+  [52/100] done (4.43s)
+  [53/100] done (4.44s)
+  [54/100] done (4.43s)
+  [55/100] done (4.43s)
+  [56/100] done (4.42s)
+  [57/100] done (4.42s)
+  [58/100] done (4.43s)
+  [59/100] done (4.42s)
+  [60/100] done (4.42s)
+  [61/100] done (4.42s)
+  [62/100] done (4.42s)
+  [63/100] done (4.43s)
+  [64/100] done (4.43s)
+  [65/100] done (4.43s)
+  [66/100] done (4.43s)
+  [67/100] done (4.43s)
+  [68/100] done (4.42s)
+  [69/100] done (4.43s)
+  [70/100] done (4.42s)
+  [71/100] done (4.43s)
+  [72/100] done (4.44s)
+  [73/100] done (4.43s)
+  [74/100] done (4.43s)
+  [75/100] done (4.43s)
+  [76/100] done (4.43s)
+  [77/100] done (4.43s)
+  [78/100] done (4.43s)
+  [79/100] done (4.43s)
+  [80/100] done (4.41s)
+  [81/100] done (4.44s)
+  [82/100] done (4.43s)
+  [83/100] done (4.44s)
+  [84/100] done (4.43s)
+  [85/100] done (4.43s)
+  [86/100] done (4.43s)
+  [87/100] done (4.43s)
+  [88/100] done (4.43s)
+  [89/100] done (4.43s)
+  [90/100] done (4.43s)
+  [91/100] done (4.43s)
+  [92/100] done (4.43s)
+  [93/100] done (4.42s)
+  [94/100] done (4.42s)
+  [95/100] done (4.43s)
+  [96/100] done (4.43s)
+  [97/100] done (4.43s)
+  [98/100] done (4.43s)
+  [99/100] done (4.43s)
+  [100/100] done (4.43s)
+
+[2/4] Computing FID (pool: 300 generated)...
+  [INFO] Reference: full fine-tune pool (300 images).
+  FID: 78.69  (lower is better)
+
+[3/4] Computing CLIP score...
+  CLIP score: 15.5054  (higher is better)
+
+[4/4] Computing OCR accuracy...
+    OCR exact match:   0.2300  (normalized)
+    OCR word accuracy: 0.5421  (normalized)
+    OCR CER:           0.5314  (lower is better)
+
+======================================================================
+TEST EVALUATION COMPLETE
+======================================================================
+  FID:               78.69
+  CLIP score:        15.5054
+  OCR exact match:   0.23
+  OCR word accuracy: 0.5421
+  Avg latency:       4.42s
+  Images saved to:   results/generated_images/qlora_cross_attention_rank16/test/
+✓ Metrics saved to results/metrics/qlora_cross_attention_rank16.json
+
+==============================================================================================================
+FINAL COMPARISON
+==============================================================================================================
+Experiment                                  FID     CLIP  OCR-Exact   OCR-Word   OCR-CER   Size(MB)
+--------------------------------------------------------------------------------------------------------------
+original_baseline                         56.68  15.3822       0.25     0.6256    0.4179   22616.69
+full_finetune                              -0.0  15.5621       0.25      0.584    0.4162   15224.66
+lora_flux2klein_rank8                     56.19  15.5065       0.28     0.5694    0.4573       3.76
+lora_flux2klein_rank16                    59.44   15.405       0.24     0.5656     0.421       7.51
+lora_flux2klein_rank32                    64.43  15.5418       0.27     0.5935     0.416      15.01
+lora_flux2klein_rank64                     74.8  15.6741       0.17     0.4857    0.4548      30.01
+lora_cross_attention_rank16               66.01  15.2953        0.3     0.6155    0.3951       3.75
+lora_cross_attention_rank32               67.58  15.4661       0.25     0.5975    0.4361        7.5
+qlora_cross_attention_rank16              78.69  15.5054       0.23     0.5421    0.5314       3.75
+
+✓ Saved to results/metrics/final_comparison.json
+Done: lun. 23 mars 2026 14:23:26 CET

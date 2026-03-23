@@ -40,50 +40,60 @@ def evaluate_on_test_set(pipe, tracker, test_dataloader, experiment_name, use_au
     if use_autocast:
         print("  [INFO] bfloat16 autocast enabled for inference (QLoRA mode)")
 
-    # Generate images
-    print("\n[1/4] Generating images from test prompts...")
-    generated_images = []
+    # Generate images.
+    # FID_IMAGES_PER_PROMPT must match evaluate_all.py.
+    # k=0 (seed=2024+i) → primary images saved to disk, used for CLIP/OCR/qualitative.
+    # k=1,2 (seeds 3024+i, 4024+i) → extra images for FID pool only.
+    FID_IMAGES_PER_PROMPT = 3
+
+    print(f"\n[1/4] Generating images ({FID_IMAGES_PER_PROMPT} per prompt for FID, 1 for CLIP/OCR)...")
+    generated_images_primary = []   # k=0 only — saved to disk, used for CLIP/OCR
+    generated_images_all = []       # all k — used for FID
     inference_times = []
 
-    # nullcontext = no-op for all non-QLoRA models
     inference_ctx = torch.autocast("cuda", dtype=torch.bfloat16) if use_autocast else nullcontext()
 
     for i, prompt in enumerate(all_prompts):
-        # Globally fixed seed per sample index — identical across ALL experiments
-        # so generated images differ only due to model weights, not noise variation.
-        seed = 2024 + i
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed(seed)
-        np.random.seed(seed)
-        torch.cuda.empty_cache()
-        start = time.time()
-        with torch.no_grad():
-            with inference_ctx:
-                image = pipe(
-                    prompt=prompt,
-                    num_inference_steps=20,
-                    guidance_scale=4.0,
-                    height=512,
-                    width=512,
-                    max_sequence_length=512,
-                    text_encoder_out_layers=(9, 18, 27)
-                ).images[0]
-        inference_times.append(time.time() - start)
+        for k in range(FID_IMAGES_PER_PROMPT):
+            seed = (2024 + k * 1000) + i
+            torch.manual_seed(seed)
+            torch.cuda.manual_seed(seed)
+            np.random.seed(seed)
+            torch.cuda.empty_cache()
+            t0 = time.time()
+            with torch.no_grad():
+                with inference_ctx:
+                    image = pipe(
+                        prompt=prompt,
+                        num_inference_steps=20,
+                        guidance_scale=4.0,
+                        height=512,
+                        width=512,
+                        max_sequence_length=512,
+                        text_encoder_out_layers=(9, 18, 27)
+                    ).images[0]
+            elapsed = time.time() - t0
+            generated_images_all.append(image)
 
-        safe_name = prompt[:40].replace(" ", "_").replace("/", "_")
-        image.save(output_dir / f"{i:02d}_{safe_name}.png")
-        generated_images.append(image)
+            if k == 0:
+                inference_times.append(elapsed)
+                safe_name = prompt[:40].replace(" ", "_").replace("/", "_")
+                image.save(output_dir / f"{i:03d}_{safe_name}.png")
+                generated_images_primary.append(image)
+
         print(f"  [{i+1}/{len(all_prompts)}] done ({inference_times[-1]:.2f}s)")
 
-    # FID — use reference images if provided (full fine-tune generated),
-    # otherwise fall back to real test images (for baseline and full_finetune itself).
-    print("\n[2/4] Computing FID...")
+    generated_images = generated_images_primary  # alias for CLIP/OCR below
+
+    # FID — uses generated_images_all (300 images) against the 300-image reference
+    # for a reliable covariance estimate. CLIP and OCR use generated_images_primary only.
+    print(f"\n[2/4] Computing FID (pool: {len(generated_images_all)} generated)...")
     if fid_reference_images is not None:
-        print("  [INFO] Using full fine-tune generated images as FID reference.")
-        fid_score = tracker.compute_fid(fid_reference_images, generated_images)
+        print(f"  [INFO] Reference: full fine-tune pool ({len(fid_reference_images)} images).")
+        fid_score = tracker.compute_fid(fid_reference_images, generated_images_all)
     else:
-        print("  [INFO] Using real test images as FID reference (baseline mode).")
-        fid_score = tracker.compute_fid(all_real_images, generated_images)
+        print("  [INFO] Reference: real test images (baseline mode).")
+        fid_score = tracker.compute_fid(all_real_images, generated_images_all)
     print(f"  FID: {fid_score:.2f}  (lower is better)")
 
     # CLIP

@@ -1,0 +1,143 @@
+Job ID : 16874
+Node   : ensta-l40s02
+GPU    : NVIDIA L40S
+Date   : lun. 23 mars 2026 03:13:25 CET
+============================================================
+LORA CROSS-ATTENTION ONLY - RANK 16
+============================================================
+
+[1/5] Loading model...
+
+[2/5] Configuring LoRA on cross-attention (rank=16)...
+trainable params: 983,040 || all params: 3,876,527,616 || trainable%: 0.0254
+
+[3/5] Loading dataset...
+Loaded 800 samples from data/train.json
+Loaded 100 samples from data/val.json
+  Train: 800 | Val: 100
+
+[4/5] Setting up optimizer...
+
+[5/5] Training...
+  → Best model saved (val_loss=0.8827)
+  → Best model saved (val_loss=0.8418)
+Epoch 3/20 - train_loss: 0.8723 | val_loss: 0.8463
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  → Best model saved (val_loss=0.8349)
+Epoch 6/20 - train_loss: 0.8492 | val_loss: 0.8354
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  → Best model saved (val_loss=0.8337)
+Epoch 9/20 - train_loss: 0.8497 | val_loss: 0.8590
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  → Best model saved (val_loss=0.8335)
+Epoch 12/20 - train_loss: 0.8515 | val_loss: 0.9035
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  No improvement for 3/5 epochs
+Epoch 15/20 - train_loss: 0.8546 | val_loss: 0.8312
+  → Best model saved (val_loss=0.8312)
+  → Best model saved (val_loss=0.8239)
+  No improvement for 1/5 epochs
+Epoch 18/20 - train_loss: 0.8586 | val_loss: 0.8402
+  No improvement for 2/5 epochs
+  No improvement for 3/5 epochs
+  No improvement for 4/5 epochs
+Saved metrics to: results/metrics/lora_cross_attention_rank16_resources.csv
+✓ Metrics saved to results/metrics/lora_cross_attention_rank16.json
+
+============================================================
+RESULTS: lora_cross_attention_rank16
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 983040
+  trainable_percentage: 0.03
+  peak_vram_gb: 19.02
+  energy_kwh: 0.026096
+  carbon_gco2eq: 26.1
+  training_time_hours: 1.19
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.8239
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ LoRA cross-attention rank 16 complete
+============================================================
+LORA CROSS-ATTENTION ONLY - RANK 32
+============================================================
+
+[1/5] Loading model...
+
+[2/5] Configuring LoRA on cross-attention (rank=32)...
+trainable params: 1,966,080 || all params: 3,877,510,656 || trainable%: 0.0507
+
+[3/5] Loading dataset...
+Loaded 800 samples from data/train.json
+Loaded 100 samples from data/val.json
+  Train: 800 | Val: 100
+
+[4/5] Setting up optimizer...
+
+[5/5] Training...
+  → Best model saved (val_loss=0.8811)
+  → Best model saved (val_loss=0.8411)
+Epoch 3/20 - train_loss: 0.8638 | val_loss: 0.8452
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  → Best model saved (val_loss=0.8336)
+Epoch 6/20 - train_loss: 0.8500 | val_loss: 0.8347
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  → Best model saved (val_loss=0.8330)
+Epoch 9/20 - train_loss: 0.8521 | val_loss: 0.8583
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  → Best model saved (val_loss=0.8324)
+Epoch 12/20 - train_loss: 0.8500 | val_loss: 0.9030
+  No improvement for 1/5 epochs
+  No improvement for 2/5 epochs
+  No improvement for 3/5 epochs
+Epoch 15/20 - train_loss: 0.8523 | val_loss: 0.8308
+  → Best model saved (val_loss=0.8308)
+  → Best model saved (val_loss=0.8230)
+  No improvement for 1/5 epochs
+Epoch 18/20 - train_loss: 0.8558 | val_loss: 0.8389
+  No improvement for 2/5 epochs
+  No improvement for 3/5 epochs
+  No improvement for 4/5 epochs
+Saved metrics to: results/metrics/lora_cross_attention_rank32_resources.csv
+✓ Metrics saved to results/metrics/lora_cross_attention_rank32.json
+
+============================================================
+RESULTS: lora_cross_attention_rank32
+============================================================
+
+[TRAINING EFFICIENCY]
+  trainable_params: 1966080
+  trainable_percentage: 0.05
+  peak_vram_gb: 19.04
+  energy_kwh: 0.026201
+  carbon_gco2eq: 26.2
+  training_time_hours: 1.19
+  adapter_size_mb: None
+
+[VALIDATION]
+  val_loss: 0.823
+
+[TEST METRICS]
+
+[INFERENCE]
+============================================================
+
+
+✓ LoRA cross-attention rank 32 complete
+Done: lun. 23 mars 2026 05:36:36 CET

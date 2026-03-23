@@ -1,65 +1,65 @@
 {
   "original_baseline": {
-    "fid": 228.91,
-    "clip_score": 15.6145,
-    "ocr_exact_match": 0.16,
-    "ocr_word_accuracy": 0.4132,
-    "ocr_cer": 0.7042
+    "fid": 56.68,
+    "clip_score": 15.3822,
+    "ocr_exact_match": 0.25,
+    "ocr_word_accuracy": 0.6256,
+    "ocr_cer": 0.4179
   },
   "full_finetune": {
-    "fid": 172.79,
-    "clip_score": 15.815,
-    "ocr_exact_match": 0.16,
-    "ocr_word_accuracy": 0.3982,
-    "ocr_cer": 0.7314
+    "fid": -0.0,
+    "clip_score": 15.5621,
+    "ocr_exact_match": 0.25,
+    "ocr_word_accuracy": 0.584,
+    "ocr_cer": 0.4162
   },
   "lora_flux2klein_rank8": {
-    "fid": 161.61,
-    "clip_score": 15.7661,
-    "ocr_exact_match": 0.24,
-    "ocr_word_accuracy": 0.4027,
-    "ocr_cer": 0.6947
+    "fid": 56.19,
+    "clip_score": 15.5065,
+    "ocr_exact_match": 0.28,
+    "ocr_word_accuracy": 0.5694,
+    "ocr_cer": 0.4573
   },
   "lora_flux2klein_rank16": {
-    "fid": 167.03,
-    "clip_score": 15.7387,
-    "ocr_exact_match": 0.22,
-    "ocr_word_accuracy": 0.4351,
-    "ocr_cer": 0.6845
+    "fid": 59.44,
+    "clip_score": 15.405,
+    "ocr_exact_match": 0.24,
+    "ocr_word_accuracy": 0.5656,
+    "ocr_cer": 0.421
   },
   "lora_flux2klein_rank32": {
-    "fid": 159.67,
-    "clip_score": 15.7958,
-    "ocr_exact_match": 0.2,
-    "ocr_word_accuracy": 0.4106,
-    "ocr_cer": 0.6979
+    "fid": 64.43,
+    "clip_score": 15.5418,
+    "ocr_exact_match": 0.27,
+    "ocr_word_accuracy": 0.5935,
+    "ocr_cer": 0.416
   },
   "lora_flux2klein_rank64": {
-    "fid": 159.17,
-    "clip_score": 15.9346,
-    "ocr_exact_match": 0.18,
-    "ocr_word_accuracy": 0.38,
-    "ocr_cer": 0.6885
+    "fid": 74.8,
+    "clip_score": 15.6741,
+    "ocr_exact_match": 0.17,
+    "ocr_word_accuracy": 0.4857,
+    "ocr_cer": 0.4548
   },
   "lora_cross_attention_rank16": {
-    "fid": 161.51,
-    "clip_score": 15.6836,
-    "ocr_exact_match": 0.2,
-    "ocr_word_accuracy": 0.4119,
-    "ocr_cer": 0.6603
+    "fid": 66.01,
+    "clip_score": 15.2953,
+    "ocr_exact_match": 0.3,
+    "ocr_word_accuracy": 0.6155,
+    "ocr_cer": 0.3951
   },
   "lora_cross_attention_rank32": {
-    "fid": 152.48,
-    "clip_score": 15.9234,
-    "ocr_exact_match": 0.2,
-    "ocr_word_accuracy": 0.4526,
-    "ocr_cer": 0.7282
+    "fid": 67.58,
+    "clip_score": 15.4661,
+    "ocr_exact_match": 0.25,
+    "ocr_word_accuracy": 0.5975,
+    "ocr_cer": 0.4361
   },
   "qlora_cross_attention_rank16": {
-    "fid": 164.22,
-    "clip_score": 15.9531,
-    "ocr_exact_match": 0.18,
-    "ocr_word_accuracy": 0.3495,
-    "ocr_cer": 0.6916
+    "fid": 78.69,
+    "clip_score": 15.5054,
+    "ocr_exact_match": 0.23,
+    "ocr_word_accuracy": 0.5421,
+    "ocr_cer": 0.5314
   }
 }
