@@ -56,46 +56,90 @@ def safe(d, *keys, default=None):
             return default
     return d
 
+def _pareto_front(xs, ys, lower_x_better=True, lower_y_better=True):
+    """Return indices of Pareto-optimal points (both axes: lower = better by default)."""
+    points = list(zip(xs, ys, range(len(xs))))
+    pareto = []
+    for x, y, i in points:
+        dominated = False
+        for x2, y2, j in points:
+            if i == j:
+                continue
+            x_better = (x2 <= x) if lower_x_better else (x2 >= x)
+            y_better = (y2 <= y) if lower_y_better else (y2 >= y)
+            x_strict = (x2 < x)  if lower_x_better else (x2 > x)
+            y_strict = (y2 < y)  if lower_y_better else (y2 > y)
+            if (x_better and y_better) and (x_strict or y_strict):
+                dominated = True
+                break
+        if not dominated:
+            pareto.append(i)
+    return pareto
+
+
 def plot_tradeoff_scatter(all_metrics):
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-
     ax1, ax2 = axes
-    plotted = []
+
+    vrams, fids, ocr_ws, pcts = [], [], [], []
+    names_p1, names_p2 = [], []
+    colors_p1, colors_p2 = [], []
 
     for name, m in all_metrics.items():
         fid   = safe(m, "test", "fid")
-        clip  = safe(m, "test", "clip_score")
         ocr_w = safe(m, "test", "ocr_word_accuracy")
         vram  = safe(m, "training", "peak_vram_gb")
         pct   = safe(m, "training", "trainable_percentage")
         color = COLORS.get(name, "#999999")
         label = LABELS.get(name, name)
 
-        # --- Plot 1: FID vs VRAM ---
-        if fid is not None and vram is not None:
+        # Plot 1: VRAM vs FID (both lower = better)
+        if fid is not None and vram is not None and fid > 0:
             ax1.scatter(vram, fid, color=color, s=120, zorder=5,
                         edgecolors="white", linewidths=0.8)
             ax1.annotate(label, (vram, fid),
                          textcoords="offset points", xytext=(6, 4),
                          fontsize=8, color=color)
+            vrams.append(vram); fids.append(fid)
+            names_p1.append(label); colors_p1.append(color)
 
-        # --- Plot 2: OCR word accuracy vs trainable % ---
+        # Plot 2: trainable% vs OCR word accuracy (lower% better, higher OCR better)
         if ocr_w is not None and isinstance(ocr_w, float) and pct is not None:
             ax2.scatter(pct, ocr_w, color=color, s=120, zorder=5,
                         edgecolors="white", linewidths=0.8)
             ax2.annotate(label, (pct, ocr_w),
                          textcoords="offset points", xytext=(6, 4),
                          fontsize=8, color=color)
+            pcts.append(pct); ocr_ws.append(ocr_w)
+            names_p2.append(label); colors_p2.append(color)
 
-        plotted.append(name)
+    # --- Pareto front plot 1: lower VRAM + lower FID = better ---
+    if len(vrams) > 1:
+        pidx = _pareto_front(vrams, fids, lower_x_better=True, lower_y_better=True)
+        px = sorted([(vrams[i], fids[i]) for i in pidx], key=lambda t: t[0])
+        ax1.plot([p[0] for p in px], [p[1] for p in px],
+                 color="black", linewidth=1.2, linestyle="--",
+                 zorder=4, label="Pareto front")
+        ax1.legend(fontsize=8)
 
-    ax1.set_xlabel("Peak VRAM (GB)", fontsize=11)
+    # --- Pareto front plot 2: lower trainable% + higher OCR = better ---
+    if len(pcts) > 1:
+        pidx = _pareto_front(pcts, [-v for v in ocr_ws],
+                             lower_x_better=True, lower_y_better=True)
+        px = sorted([(pcts[i], ocr_ws[i]) for i in pidx], key=lambda t: t[0])
+        ax2.plot([p[0] for p in px], [p[1] for p in px],
+                 color="black", linewidth=1.2, linestyle="--",
+                 zorder=4, label="Pareto front")
+        ax2.legend(fontsize=8)
+
+    ax1.set_xscale("log")
+    ax1.set_xlabel("Peak VRAM (GB, log scale)", fontsize=11)
     ax1.set_ylabel("FID ↓ (lower is better)", fontsize=11)
     ax1.set_title("Quality vs Hardware Cost", fontsize=13, fontweight="bold")
     ax1.grid(True, linestyle="--", alpha=0.4)
-    ax1.invert_yaxis()   # lower FID = better → flip so "up = better"
 
-    ax2.set_xlabel("Trainable parameters (%)", fontsize=11)
+    ax2.set_xscale("log")
+    ax2.set_xlabel("Trainable parameters (%, log scale)", fontsize=11)
     ax2.set_ylabel("OCR word accuracy ↑", fontsize=11)
     ax2.set_title("Text Rendering vs Parameter Efficiency", fontsize=13, fontweight="bold")
     ax2.grid(True, linestyle="--", alpha=0.4)
@@ -195,14 +239,15 @@ def plot_adapter_sizes(all_metrics):
     fig, ax = plt.subplots(figsize=(10, 5))
     bars = ax.barh(names, sizes, color=colors, edgecolor="white", height=0.6)
 
-    for bar, size in zip(bars, sizes):
-        ax.text(bar.get_width() + max(sizes) * 0.01, bar.get_y() + bar.get_height() / 2,
-                f"{size:.0f} MB", va="center", fontsize=9)
-
-    ax.set_xlabel("Storage size (MB)", fontsize=11)
+    ax.set_xscale("log")
+    ax.set_xlabel("Storage size (MB, log scale)", fontsize=11)
     ax.set_title("Adapter / Checkpoint Size on Disk", fontsize=13, fontweight="bold")
     ax.grid(axis="x", linestyle="--", alpha=0.4)
-    ax.set_xlim(0, max(sizes) * 1.15)
+    ax.set_xlim(1, max(sizes) * 3)
+    for bar, size in zip(bars, sizes):
+        label = f"{size:.0f} MB" if size < 1000 else f"{size/1024:.1f} GB"
+        ax.text(bar.get_width() * 1.05, bar.get_y() + bar.get_height() / 2,
+                label, va="center", fontsize=9)
 
     plt.tight_layout()
     out = PLOTS_DIR / "adapter_sizes.png"

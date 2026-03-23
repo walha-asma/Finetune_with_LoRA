@@ -1,7 +1,7 @@
-Job ID : 16936
+Job ID : 16959
 Node   : ensta-l40s02
 GPU    : NVIDIA L40S
-Date   : lun. 23 mars 2026 14:24:49 CET
+Date   : lun. 23 mars 2026 20:29:21 CET
 ============================================================
 GENERATING PLOTS
 ============================================================
@@ -27,4 +27,4 @@ GENERATING PLOTS
 
  All plots saved to /home/ensta/ensta-walha/text-in-image-generation/Finetune_with_LoRA/results/plots/
 ============================================================
-Done: lun. 23 mars 2026 14:24:50 CET
+Done: lun. 23 mars 2026 20:29:22 CET
