@@ -86,6 +86,20 @@ def train_lora_rank(rank, model_path, epochs=15, seed=42, early_stopping_patienc
         num_training_steps=total_steps
     )
 
+    print("\n  Pre-computing text embeddings for all training samples...")
+    pipe.text_encoder.eval()
+    all_prompt_embeds = {}
+    with torch.no_grad():
+        for batch in train_dataloader:
+            for prompt in batch["prompt"]:
+                if prompt not in all_prompt_embeds:
+                    pe, ti = pipe.encode_prompt(
+                        prompt=prompt, device="cuda", num_images_per_prompt=1,
+                        max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
+                    )
+                    all_prompt_embeds[prompt] = (pe.cpu(), ti.cpu())
+    print(f"  Cached {len(all_prompt_embeds)} unique prompt embeddings.")
+
     print("\n[5/5] Training...")
     gradient_accumulation_steps = 4
     model.train()
@@ -124,11 +138,8 @@ def train_lora_rank(rank, model_path, epochs=15, seed=42, early_stopping_patienc
                     target = noise - latents
                     del noise, timesteps_expanded
 
-                    with torch.no_grad():
-                        prompt_embeds, text_ids = pipe.encode_prompt(
-                            prompt=prompts, device="cuda", num_images_per_prompt=1,
-                            max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
-                        )
+                    prompt_embeds = all_prompt_embeds[prompts[0]][0].to("cuda")
+                    text_ids      = all_prompt_embeds[prompts[0]][1].to("cuda")
 
                     noisy_latents_packed = pipe._pack_latents(noisy_latents)
                     latent_ids = pipe._prepare_latent_ids(noisy_latents).to("cuda")
@@ -176,7 +187,7 @@ def train_lora_rank(rank, model_path, epochs=15, seed=42, early_stopping_patienc
                 best_val_loss = val_loss
                 epochs_no_improve = 0
                 model.save_pretrained(output_dir)
-                print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+                print(f"  -> Best model saved (val_loss={best_val_loss:.4f})")
             else:
                 epochs_no_improve += 1
                 print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
@@ -228,7 +239,7 @@ def lora_rank_sweep(model_path="models/flux2-klein-base-4b", ranks=[8, 16], epoc
     with open(comparison_file, "w") as f:
         json.dump(all_results, f, indent=2)
 
-    print(f"\n✓ Comparison saved to {comparison_file}")
+    print(f"\n Comparison saved to {comparison_file}")
     return all_results
 
 

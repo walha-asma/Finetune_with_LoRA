@@ -109,6 +109,20 @@ def full_finetune(
         num_training_steps=total_steps
     )
 
+    print("\n  Pre-computing text embeddings for all training samples...")
+    pipe.text_encoder.eval()
+    all_prompt_embeds = {}
+    with torch.no_grad():
+        for batch in train_dataloader:
+            for prompt in batch["prompt"]:
+                if prompt not in all_prompt_embeds:
+                    pe, ti = pipe.encode_prompt(
+                        prompt=prompt, device="cuda", num_images_per_prompt=1,
+                        max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
+                    )
+                    all_prompt_embeds[prompt] = (pe.cpu(), ti.cpu())
+    print(f"  Cached {len(all_prompt_embeds)} unique prompt embeddings.")
+
     print("\n[4/5] Training...")
     model.train()
     pipe.text_encoder.eval()
@@ -146,11 +160,8 @@ def full_finetune(
                     target = noise - latents
                     del noise, timesteps_expanded
 
-                    with torch.no_grad():
-                        prompt_embeds, text_ids = pipe.encode_prompt(
-                            prompt=prompts, device="cuda", num_images_per_prompt=1,
-                            max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
-                        )
+                    prompt_embeds = all_prompt_embeds[prompts[0]][0].to("cuda")
+                    text_ids      = all_prompt_embeds[prompts[0]][1].to("cuda")
 
                     noisy_latents_packed = pipe._pack_latents(noisy_latents)
                     latent_ids = pipe._prepare_latent_ids(noisy_latents).to("cuda")
@@ -184,26 +195,20 @@ def full_finetune(
                     optimizer.zero_grad()
                     torch.cuda.empty_cache()
 
-                if (batch_idx + 1) % 5 == 0:
-                    allocated = torch.cuda.memory_allocated() / 1024**3
-                    reserved = torch.cuda.memory_reserved() / 1024**3
-                    print(f"  Epoch {epoch+1}/{epochs} - Batch {batch_idx+1}/{len(train_dataloader)} "
-                          f"- loss: {loss.item() * gradient_accumulation_steps:.4f} "
-                          f"- GPU: {allocated:.2f}GB/{reserved:.2f}GB")
-
                 epoch_loss += loss.item() * gradient_accumulation_steps
                 del loss, images, latents, target
 
             train_loss = epoch_loss / len(train_dataloader)
             val_loss = compute_val_loss(pipe, model, val_dataloader, dtype)
             tracker.record_epoch_losses(epoch + 1, train_loss, val_loss)
-            print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
+            if (epoch + 1) % 3 == 0:
+                print(f"Epoch {epoch+1}/{epochs} - train_loss: {train_loss:.4f} | val_loss: {val_loss:.4f}")
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 epochs_no_improve = 0
                 pipe.save_pretrained(output_dir)
-                print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+                print(f"  -> Best model saved (val_loss={best_val_loss:.4f})")
             else:
                 epochs_no_improve += 1
                 print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
@@ -223,7 +228,7 @@ def full_finetune(
     tracker.save()
     tracker.print_summary()
 
-    print(f"\n✓ Full fine-tuning complete")
+    print(f"\n Full fine-tuning complete")
     return pipe
 
 

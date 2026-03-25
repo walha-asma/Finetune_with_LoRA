@@ -23,7 +23,7 @@ def set_seed(seed=42):
 
 def train_lora_cross_attention(
     model_path="models/flux2-klein-base-4b",
-    output_dir="models/lora_cross_attention",
+    output_dir="text-in-image-generation/Finetune_with_LoRA/models/lora_cross_attention",
     rank=16,
     epochs=20,
     seed=42,
@@ -92,6 +92,20 @@ def train_lora_cross_attention(
         num_training_steps=total_steps
     )
 
+    print("\n  Pre-computing text embeddings for all training samples...")
+    pipe.text_encoder.eval()
+    all_prompt_embeds = {}
+    with torch.no_grad():
+        for batch in train_dataloader:
+            for prompt in batch["prompt"]:
+                if prompt not in all_prompt_embeds:
+                    pe, ti = pipe.encode_prompt(
+                        prompt=prompt, device="cuda", num_images_per_prompt=1,
+                        max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
+                    )
+                    all_prompt_embeds[prompt] = (pe.cpu(), ti.cpu())
+    print(f"  Cached {len(all_prompt_embeds)} unique prompt embeddings.")
+
     print("\n[5/5] Training...")
     gradient_accumulation_steps = 4
     model.train()
@@ -99,7 +113,7 @@ def train_lora_cross_attention(
     pipe.vae.eval()
     optimizer.zero_grad()
 
-    rank_output_dir = f"{output_dir}_rank{rank}"
+    rank_output_dir = f"{output_dir}/rank_{rank}"
     Path(rank_output_dir).mkdir(parents=True, exist_ok=True)
     best_val_loss = float("inf")
     epochs_no_improve = 0
@@ -130,11 +144,8 @@ def train_lora_cross_attention(
                     target = noise - latents
                     del noise, timesteps_expanded
 
-                    with torch.no_grad():
-                        prompt_embeds, text_ids = pipe.encode_prompt(
-                            prompt=prompts, device="cuda", num_images_per_prompt=1,
-                            max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
-                        )
+                    prompt_embeds = all_prompt_embeds[prompts[0]][0].to("cuda")
+                    text_ids      = all_prompt_embeds[prompts[0]][1].to("cuda")
 
                     noisy_latents_packed = pipe._pack_latents(noisy_latents)
                     latent_ids = pipe._prepare_latent_ids(noisy_latents).to("cuda")
@@ -182,7 +193,7 @@ def train_lora_cross_attention(
                 best_val_loss = val_loss
                 epochs_no_improve = 0
                 model.save_pretrained(rank_output_dir)
-                print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+                print(f" -> Best model saved (val_loss={best_val_loss:.4f})")
             else:
                 epochs_no_improve += 1
                 print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
@@ -203,7 +214,7 @@ def train_lora_cross_attention(
     tracker.save()
     tracker.print_summary()
 
-    print(f"\n✓ LoRA cross-attention rank {rank} complete")
+    print(f"\n LoRA cross-attention rank {rank} complete")
     return pipe
 
 

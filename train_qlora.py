@@ -118,6 +118,20 @@ def train_qlora(
         num_training_steps=total_steps
     )
 
+    print("\n  Pre-computing text embeddings for all training samples...")
+    pipe.text_encoder.eval()
+    all_prompt_embeds = {}
+    with torch.no_grad():
+        for batch in train_dataloader:
+            for prompt in batch["prompt"]:
+                if prompt not in all_prompt_embeds:
+                    pe, ti = pipe.encode_prompt(
+                        prompt=prompt, device="cuda", num_images_per_prompt=1,
+                        max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
+                    )
+                    all_prompt_embeds[prompt] = (pe.cpu(), ti.cpu())
+    print(f"  Cached {len(all_prompt_embeds)} unique prompt embeddings.")
+
     print("\n[5/5] Training...")
     gradient_accumulation_steps = 4
     model.train()
@@ -155,11 +169,8 @@ def train_qlora(
                     target = noise - latents
                     del noise, timesteps_expanded
 
-                    with torch.no_grad():
-                        prompt_embeds, text_ids = pipe.encode_prompt(
-                            prompt=prompts, device="cuda", num_images_per_prompt=1,
-                            max_sequence_length=512, text_encoder_out_layers=(9, 18, 27)
-                        )
+                    prompt_embeds = all_prompt_embeds[prompts[0]][0].to("cuda")
+                    text_ids      = all_prompt_embeds[prompts[0]][1].to("cuda")
 
                     noisy_latents_packed = pipe._pack_latents(noisy_latents)
                     latent_ids = pipe._prepare_latent_ids(noisy_latents).to("cuda")
@@ -193,10 +204,6 @@ def train_qlora(
                     optimizer.zero_grad()
                     torch.cuda.empty_cache()
 
-                if (batch_idx + 1) % 10 == 0:
-                    allocated = torch.cuda.memory_allocated() / 1024**3
-                    print(f"  Epoch {epoch+1} - Batch {batch_idx+1} - GPU: {allocated:.2f}GB")
-
                 epoch_loss += loss.item() * gradient_accumulation_steps
                 del loss, images, latents, target
 
@@ -211,7 +218,7 @@ def train_qlora(
                 best_val_loss = val_loss
                 epochs_no_improve = 0
                 model.save_pretrained(output_dir)
-                print(f"  → Best model saved (val_loss={best_val_loss:.4f})")
+                print(f"  -> Best model saved (val_loss={best_val_loss:.4f})")
             else:
                 epochs_no_improve += 1
                 print(f"  No improvement for {epochs_no_improve}/{early_stopping_patience} epochs")
@@ -232,7 +239,7 @@ def train_qlora(
     tracker.save()
     tracker.print_summary()
 
-    print(f"\n✓ QLoRA rank {rank} complete")
+    print(f"\n QLoRA rank {rank} complete")
     return pipe
 
 
