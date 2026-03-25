@@ -2,58 +2,62 @@
 
 Fine-tuning strategies for text-in-image generation on the Flux.2 Klein 4B model.
 Covers full fine-tuning, LoRA rank sweep, cross-attention LoRA, and QLoRA —
-with a custom 500-sample dataset built from AnyWord-3M.
+with a custom dataset built from AnyWord-3M.
 
 Part of the **Efficient Image Generation with Text Rendering** project (ENSTA Paris, 2026).
+
+> Full experimental results and analysis are available in the project report.
 
 ---
 
 ## Project structure
 
 ```
-Finetune_with_LoRA/
-├── train_full_finetune.py        # Full fine-tuning (all transformer params)
-├── train_lora_rank_sweep.py      # LoRA rank sweep: r ∈ {8, 16, 32, 64}
-├── train_lora_cross_attention.py # CA-LoRA: to_k + to_v only, r ∈ {16, 32}
-├── train_qlora.py                # QLoRA: 4-bit NF4 backbone + LoRA adapters
-├── evaluate_all.py               # Full evaluation pipeline (FID, CLIP, OCR)
-├── analyze_ocr_by_length.py      # OCR breakdown by target text length
-├── generate_plots.py             # All result plots
-├── dataset_loader.py             # Dataset loading + preprocessing
-├── download_model.py             # Download Flux.2 Klein 4B from HuggingFace
-├── metrics_utils.py              # MetricsTracker: FID, CLIP, OCR, energy
-├── evaluation.py                 # evaluate_on_test_set + compute_val_loss
-├── requirements.txt
-├── src/
-│   ├── evaluation/
-│   │   └── fid.py                # InceptionV3-based FID implementation
-│   └── monitoring/
-│       ├── resource_monitor.py   # Background thread resource monitor
-│       └── metrics.py            # ResourceMetrics + CSV export
-├── jobs/
-│   ├── sh_files/                 # SLURM job scripts
-│   └── logs/                     # Job stdout/stderr logs
+text-in-image-generation/
+└── Finetune_with_LoRA/
+    ├── train_full_finetune.py        # Full fine-tuning (all transformer params)
+    ├── train_lora_rank_sweep.py      # LoRA rank sweep: r ∈ {8, 16, 32, 64}
+    ├── train_lora_cross_attention.py # CA-LoRA: to_k + to_v only, r ∈ {16, 32}
+    ├── train_qlora.py                # QLoRA: 4-bit NF4 backbone + LoRA adapters
+    ├── evaluate_all.py               # Full evaluation pipeline (FID, CLIP, OCR)
+    ├── analyze_ocr_by_length.py      # OCR breakdown by target text length
+    ├── generate_plots.py             # All result plots
+    ├── dataset_loader.py             # Dataset loading + preprocessing
+    ├── download_model.py             # Download Flux.2 Klein 4B from HuggingFace
+    ├── metrics_utils.py              # MetricsTracker: FID, CLIP, OCR, energy
+    ├── evaluation.py                 # evaluate_on_test_set + compute_val_loss
+    ├── requirements.txt
+    ├── src/
+    │   ├── evaluation/
+    │   │   └── fid.py                # InceptionV3-based FID implementation
+    │   └── monitoring/
+    │       ├── resource_monitor.py   # Background thread resource monitor
+    │       └── metrics.py            # ResourceMetrics + CSV export
+    ├── jobs/
+    │   ├── sh_files/                 # SLURM job scripts
+    │   └── logs/                     # Job stdout/stderr logs
 data/
-├── train.json                    # 400 training samples
-├── val.json                      # 50 validation samples
-├── test.json                     # 50 test samples
-└── test/images/                  # Test images
+├── train.json                        # Training samples
+├── val.json                          # Validation samples
+├── test.json                         # Test samples
+└── test/images/                      # Test images
 models/
-├── flux2-klein-base-4b/          # Base model (downloaded)
-├── full_finetune/                # Full fine-tune checkpoint
+├── flux2-klein-base-4b/              # Base model (downloaded)
+├── full_finetune/                    # Full fine-tune checkpoint
 ├── lora_flux2klein/
-│   ├── rank_8/                   # LoRA r=8 adapter
+│   ├── rank_8/
 │   ├── rank_16/
 │   ├── rank_32/
 │   └── rank_64/
-├── lora_cross_attention_rank16/  # CA-LoRA adapters
-├── lora_cross_attention_rank32/
-└── qlora_cross_attention/        # QLoRA adapter
+├── lora_cross_attention/
+│   ├── rank_16/
+│   └── rank_32/
+└── qlora_cross_attention/
 results/
-├── metrics/                      # Per-experiment JSON files + final_comparison.json
-├── plots/                        # All generated figures
-├── generated_images/             # Generated test images per experiment
-└── fid_reference/                # FID reference images from full fine-tune
+├── metrics/                          # Per-experiment JSON files
+├── plots/                            # Generated figures
+├── generated_images/                 # Generated test images per experiment
+└── fid_reference/                    # FID reference images from full fine-tune
 ```
 
 ---
@@ -102,7 +106,9 @@ data/
 ├── train.json
 ├── val.json
 ├── test.json
-└── test/images/   (and train/, val/ for training)
+├── train/images/
+├── val/images/
+└── test/images/
 ```
 
 Each JSON file contains records with fields: `filepath`, `prompt`, `text`.
@@ -110,40 +116,41 @@ Each JSON file contains records with fields: `filepath`, `prompt`, `text`.
 ### 3. Train
 
 ```bash
-# Full fine-tuning (5 epochs, ~30 min on L40S)
+# Full fine-tuning (15 epochs, early stopping patience=4)
 python train_full_finetune.py
 
-# LoRA rank sweep (r=8,16,32,64 — 10 epochs each)
+# LoRA rank sweep (r=8, 16, 32, 64 — 15 epochs each, early stopping patience=4)
 python train_lora_rank_sweep.py
 
-# Cross-attention LoRA (r=16 and r=32 — 15 epochs each)
+# Cross-attention LoRA (r=16 and r=32 — 20 epochs each, early stopping patience=5)
 python train_lora_cross_attention.py
 
-# QLoRA (4-bit NF4 + LoRA, 15 epochs)
+# QLoRA (4-bit NF4 + LoRA — 20 epochs, early stopping patience=5)
 python train_qlora.py
 ```
 
-All scripts save the **best checkpoint** (lowest validation loss) automatically.
+All scripts save the **best checkpoint** (lowest validation loss) automatically and
+stop early if validation loss does not improve for the configured patience.
 Metrics, loss curves, and resource usage are saved to `results/metrics/`.
 
 ### 4. Evaluate
 
 ```bash
-# Run full evaluation pipeline (FID, CLIP, OCR) for all experiments
 python evaluate_all.py
 ```
 
-This builds the FID reference from the full fine-tune model first, then evaluates
-all experiments against the same reference distribution for a fair comparison.
+Builds the FID reference from the full fine-tune model first, then evaluates all
+experiments against the same reference distribution for a fair comparison.
 Generated images are saved to `results/generated_images/`.
 
 ### 5. Analyze OCR by text length
 
 ```bash
-# Breakdown of OCR scores by word count (1-word / 2-word / 3+-word targets)
-# Runs on already-generated images — no GPU required
 python analyze_ocr_by_length.py
 ```
+
+Breakdown of OCR scores by word count (1-word / 2-word / 3+-word targets).
+Runs on already-generated images — no GPU required.
 
 ### 6. Generate plots
 
@@ -168,28 +175,24 @@ Logs are written to `jobs/logs/`.
 
 ---
 
-## Key results
+## Training configuration
 
-| Experiment | FID ↓ | OCR-Exact ↑ | OCR-Word ↑ | VRAM (GB) | Size (MB) |
-|---|---|---|---|---|---|
-| Original baseline | 228.91 | 0.16 | 0.413 | — | 22617 |
-| Full fine-tune | 172.79 | 0.16 | 0.398 | 30.15 | 30449 |
-| LoRA r=8 | 161.61 | **0.24** | 0.403 | 19.11 | 3.76 |
-| LoRA r=16 | 167.03 | 0.22 | 0.435 | 19.13 | 7.51 |
-| LoRA r=32 | 159.67 | 0.20 | 0.411 | 19.16 | 15.01 |
-| LoRA r=64 | 159.17 | 0.18 | 0.380 | 19.23 | 30.01 |
-| CA-LoRA r=16 | 161.51 | 0.20 | 0.412 | 19.02 | 3.75 |
-| CA-LoRA r=32 | **152.48** | 0.20 | **0.453** | 19.04 | 7.50 |
-| QLoRA r=16 | 164.22 | 0.18 | 0.350 | **16.56** | 3.75 |
+All experiments share the following setup:
 
-FID is computed against 200 full fine-tune reference images.
-OCR metrics use normalized string comparison (punctuation stripped, lowercased).
+- Precision: `bfloat16` mixed precision
+- Optimizer: AdamW (8-bit for full fine-tuning and QLoRA, standard for LoRA)
+- Gradient accumulation: 4 steps (effective batch size of 4)
+- LR schedule: cosine with 10% warmup
+- Frozen components: text encoder and VAE — only the transformer is adapted
+- Text embeddings are pre-computed once before training to avoid redundant T5 forward passes
+- Best checkpoint is selected by validation loss (flow-matching MSE in latent space)
 
-**Key findings:**
-- CA-LoRA r=32 is the Pareto optimum: best FID and word accuracy with only 7.5 MB
-- LoRA r=8 achieves the best exact match — higher ranks overfit to scene texture
-- QLoRA requires the least VRAM (16.56 GB) with competitive quality
-- OCR exact match collapses near zero for 3+ word targets across all models
+| Script | Target modules | Epochs | Patience |
+|---|---|---|---|
+| `train_full_finetune.py` | All transformer params | 15 | 4 |
+| `train_lora_rank_sweep.py` | to_q, to_k, to_v, to_out.0, ff.net.0.proj, ff.net.2 | 15 | 4 |
+| `train_lora_cross_attention.py` | to_k, to_v | 20 | 5 |
+| `train_qlora.py` | to_k, to_v (4-bit NF4 backbone) | 20 | 5 |
 
 ---
 
@@ -205,13 +208,3 @@ OCR metrics use normalized string comparison (punctuation stripped, lowercased).
 | easyocr | latest | OCR evaluation |
 | codecarbon | ≥ 2.3 | Energy tracking |
 | scipy | latest | FID computation |
-
----
-
-## Notes
-
-- All training uses `bfloat16` mixed precision with gradient accumulation of 4 steps
-- Text encoder and VAE are frozen throughout — only the transformer backbone is adapted
-- Best model is saved based on validation loss (flow-matching MSE in latent space)
-- Inference uses a fixed seed per sample (`seed = 2024 + i`) across all experiments
-  for a fair comparison
